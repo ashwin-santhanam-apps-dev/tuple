@@ -10,6 +10,7 @@ import javax.tools.Diagnostic;
 import javax.tools.JavaFileObject;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Arrays;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -30,7 +31,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
         return roundEnv.getElementsAnnotatedWith(TupleSpec.class)
                 .stream()
                 .map(element -> element.getAnnotation(TupleSpec.class))
-                .map(TupleSpec::value)
+                .flatMap(tupleSpec -> Arrays.stream(tupleSpec.value()).boxed())
                 .distinct()
                 .map(tupleSchemaGenerator::generate)
                 .map(this::saveTupleSchema)
