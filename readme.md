@@ -9,6 +9,11 @@ Create "Strongly Typed" Tuples with variable lengths in the compile time.
 5. These classes are created in the package `com.aparigraha.tuples`.
 ### Example
 `@TupleSpec({2, 3})` creates two Tuple records, `Tuple2` and `Tuple3`.
+```java
+@SpringBootApplication
+@TupleSpec({2, 3})
+public class FitnessTrackerApiApplication {}
+```
 The dynamically generated class for `Tuple2` will be similar to the one below.
 ```java
 public record Tuple2<T0, T1> (
