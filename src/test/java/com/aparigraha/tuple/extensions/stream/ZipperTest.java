@@ -44,11 +44,11 @@ class ZipperTest {
         var ids1 =  Stream.of(0, 1, 2, 3);
         var names1 = Stream.of("A", "B", "C");
 
-        var zipped = SampleTuple4.zip(ids, names, ids1, names1).toList();
+        var zipped = Tuple4.zip(ids, names, ids1, names1).toList();
 
-        assertEquals(new SampleTuple4<>(0, "A", 0, "A"), zipped.get(0));
-        assertEquals(new SampleTuple4<>(1, "B", 1, "B"), zipped.get(1));
-        assertEquals(new SampleTuple4<>(2, "C", 2, "C"), zipped.get(2));
+        assertEquals(new Tuple4<>(0, "A", 0, "A"), zipped.get(0));
+        assertEquals(new Tuple4<>(1, "B", 1, "B"), zipped.get(1));
+        assertEquals(new Tuple4<>(2, "C", 2, "C"), zipped.get(2));
         assertEquals(3, zipped.size());
     }
 }

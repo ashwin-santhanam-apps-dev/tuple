@@ -1,0 +1,106 @@
+{% macro generic(type="text", index) %}
+T{{ index }}
+{% endmacro %}
+
+
+{% macro createGenericSequence(type="text", size) %}
+{% for index in range(0, size - 1) %}{{ generic(index=index) }}{{ loop.last ? "" : ", " }}{% endfor %}
+{% endmacro %}
+
+
+{% macro field(type="text", index) %}
+{{ generic(index=index) }} item{{ index }}
+{% endmacro %}
+
+
+{% macro streamVariables(type="text", index) %}
+Stream<{{ generic(index=index) }}> stream{{ index }}
+{% endmacro %}
+
+
+{% macro fieldSequence(type="text", size) %}
+    {% for index in range(0, size - 1) %}{{ field(index=index) }}{{ loop.last ? "" : ",
+" }}
+    {% endfor %}
+{% endmacro %}
+
+
+{% macro streamVariableSequence(type="text", size) %}
+        {% for index in range(0, size - 1) %}{{ streamVariables(index=index) }}{{ loop.last ? "" : ",
+    " }}
+    {% endfor %}
+{% endmacro %}
+
+
+{%  macro className(type="text", size) %}
+Tuple{{ size }}
+{% endmacro %}
+
+
+{% macro anyTypeSequence(type="text", size) %}
+{% for index in range(0, size - 1) %}{{ "?" }}{{ loop.last ? "" : ", " }}{% endfor %}
+{% endmacro %}
+
+
+{%  macro fieldEquality(type="text", index) %}
+this.item{{ index }} == that.item{{ index }}
+{% endmacro %}
+
+
+{% macro fieldEqualitySequence(type="text", size) %}
+{% for index in range(0, size - 1) %}{{ fieldEquality(index=index) }}{{ loop.last ? ";
+" : " && " }}{% endfor %}
+{% endmacro %}
+
+
+{% macro listItem(type="text", index) %}
+(Stream<Object>) stream{{ index }}
+{% endmacro %}
+
+
+{% macro listItemSequence(type="text", size) %}
+{% for index in range(0, size - 1) %}{{ listItem(index=index) }}{{ loop.last ? "" : ", " }}{% endfor %}
+{% endmacro %}
+
+
+{% macro tupleConstructorParam(type="text", index) %}
+(T{{ index }}) zipped.get({{ index }}){% endmacro %}
+
+
+{% macro tupleConstructorParamSequence(type="text", size) %}
+{% for index in range(0, size - 1) %}{{ tupleConstructorParam(index=index) }}{{ loop.last ? "" : ", " }}{% endfor %}
+{% endmacro %}
+
+
+
+package com.aparigraha.tuples;
+
+import java.util.List;
+import java.util.stream.Stream;
+
+import com.aparigraha.tuple.extensions.stream.Zipper;
+
+
+public record {{ className(size=size) }}<{{ createGenericSequence(size=size) }}> (
+{{ fieldSequence(size=size) }}
+
+) {
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof {{ className(size=size) }}<{{ anyTypeSequence(size=size) }}> that) {
+            return {{ fieldEqualitySequence(size=size) }}
+        } else return false;
+    }
+
+
+    public static <{{ createGenericSequence(size=size) }}> Stream<{{ className(size=size) }}<{{ createGenericSequence(size=size) }}>> zip(
+{{ streamVariableSequence(size=size) }}
+
+    ) {
+        List<Stream<Object>> streams = List.of({{ listItemSequence(size=size) }});
+        return Zipper.zip(streams).map(zipped -> new {{ className(size=size) }}<>(
+                {{ tupleConstructorParamSequence(size=size) }}
+
+        ));
+    }
+}
