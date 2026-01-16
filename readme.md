@@ -7,7 +7,7 @@ Creating multiple small classes for small use cases might compromise simplicity.
 Tuples solve this by having static placeholders with generic types.
 
 This library dynamically creates strongly typed tuples with the required number of placeholders in the compile time.
-Since it's dynamic, if the usage of the tuple is removed, the generated tuple is also removed.
+Since it's dynamic, if the usage of the Tuple is removed, the generated Tuple class is also removed. Keeping the code free of unused classes.
 
 Tuples can be widely used in **Streams**, as it involves multiple transformations in different stages. And creating classes for each of those stage complicates the code.
 
