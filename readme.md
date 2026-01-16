@@ -30,7 +30,7 @@ Integer age = tuple2.item1();
    Hence, no type casting is required and all the elements are strongly typed.
 
 
-## Stream support
+## Stream support - Zip Streams
 1. Each tuple class has a static method `zip` that returns a Stream.
 2. This is used to zip `n` Streams and return a `Stream<Tuple<T0, T1, ... Tn>>`.
 3. This is non-terminal operation, hence the data will not be collected.
