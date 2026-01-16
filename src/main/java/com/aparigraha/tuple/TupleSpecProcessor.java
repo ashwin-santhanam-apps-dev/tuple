@@ -45,8 +45,14 @@ public class TupleSpecProcessor extends AbstractProcessor {
                 .map(element -> element.getAnnotation(TupleSpec.class))
                 .flatMap(tupleSpec -> Arrays.stream(tupleSpec.value()).boxed())
                 .distinct()
-                .map(size -> new TupleGenerationParams(packageName, className(size), fieldPrefix, size))
-                .allMatch(params -> saveTupleSchema(generateTuple(params)));
+                .map(size -> new TupleGenerationParams(
+                        packageName,
+                        tuple + size,
+                        fieldPrefix,
+                        size
+                ))
+                .map(this::generateTuple)
+                .allMatch(this::saveTupleSchema);
     }
 
     private TupleSchema generateTuple(TupleGenerationParams params) {
@@ -70,13 +76,5 @@ public class TupleSpecProcessor extends AbstractProcessor {
             return false;
         }
         return tupleSchemaWriter.write(tupleSchema.javaCode(), tupleSchema.completeClassName(), processingEnv);
-    }
-
-    private static String className(int size) {
-        return tuple + size;
-    }
-
-    private static String completeClassName(int size) {
-        return "%s.%s".formatted(packageName, className(size));
     }
 }
