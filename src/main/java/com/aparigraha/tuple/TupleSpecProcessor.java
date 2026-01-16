@@ -20,6 +20,10 @@ import java.util.Set;
 @SupportedAnnotationTypes("com.aparigraha.tuple.TupleSpec")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class TupleSpecProcessor extends AbstractProcessor {
+    private static final String packageName = "com.aparigraha.tuples";
+    private static final String tuple = "Tuple";
+    private static final String fieldPrefix = "item";
+
     private final TupleGenerator tupleGenerator;
 
     public TupleSpecProcessor(TupleGenerator tupleGenerator) {
@@ -46,9 +50,9 @@ public class TupleSpecProcessor extends AbstractProcessor {
         try {
             return tupleGenerator.generate(
                     new TupleGenerationParams(
-                            "com.aparigraha.tuples",
-                            "Tuple" + size,
-                            "item",
+                            packageName,
+                            className(size),
+                            fieldPrefix,
                             size
                     )
             );
@@ -61,7 +65,6 @@ public class TupleSpecProcessor extends AbstractProcessor {
         return null;
     }
 
-
     private boolean saveTupleSchema(String tupleSchema, int size) {
         if (tupleSchema == null) {
             return false;
@@ -69,7 +72,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
         try {
             JavaFileObject file = processingEnv
                     .getFiler()
-                    .createSourceFile("com.aparigraha.tuples.Tuple" + size);
+                    .createSourceFile(completeClassName(size));
             try (PrintWriter out = new PrintWriter(file.openWriter())) {
                 out.print(tupleSchema);
             }
@@ -85,5 +88,13 @@ public class TupleSpecProcessor extends AbstractProcessor {
             );
             return false;
         }
+    }
+
+    private static String className(int size) {
+        return tuple + size;
+    }
+
+    private static String completeClassName(int size) {
+        return "%s.%s".formatted(packageName, className(size));
     }
 }
