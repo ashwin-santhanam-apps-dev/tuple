@@ -2,6 +2,7 @@ package com.aparigraha.tuple;
 
 import com.aparigraha.tuple.generator.TupleGenerationParams;
 import com.aparigraha.tuple.generator.TupleGenerator;
+import com.aparigraha.tuple.generator.TupleSchemaWriter;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
@@ -10,9 +11,7 @@ import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Arrays;
 import java.util.Set;
 
@@ -25,13 +24,16 @@ public class TupleSpecProcessor extends AbstractProcessor {
     private static final String fieldPrefix = "item";
 
     private final TupleGenerator tupleGenerator;
+    private final TupleSchemaWriter tupleSchemaWriter;
 
-    public TupleSpecProcessor(TupleGenerator tupleGenerator) {
+    public TupleSpecProcessor(TupleGenerator tupleGenerator, TupleSchemaWriter tupleSchemaWriter) {
+        super();
         this.tupleGenerator = tupleGenerator;
+        this.tupleSchemaWriter = tupleSchemaWriter;
     }
 
     public TupleSpecProcessor() {
-        this(new TupleGenerator());
+        this(new TupleGenerator(), new TupleSchemaWriter());
     }
 
 
@@ -69,25 +71,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
         if (tupleSchema == null) {
             return false;
         }
-        try {
-            JavaFileObject file = processingEnv
-                    .getFiler()
-                    .createSourceFile(completeClassName(size));
-            try (PrintWriter out = new PrintWriter(file.openWriter())) {
-                out.print(tupleSchema);
-            }
-            processingEnv.getMessager().printMessage(
-                    Diagnostic.Kind.NOTE,
-                    "Created Tuple class with size: " + size
-            );
-            return true;
-        } catch (IOException exception) {
-            processingEnv.getMessager().printMessage(
-                    Diagnostic.Kind.ERROR,
-                    "Failed creating Tuple class with size: " + size + "\n" + exception.getMessage()
-            );
-            return false;
-        }
+        return tupleSchemaWriter.write(tupleSchema, completeClassName(size), processingEnv);
     }
 
     private static String className(int size) {
