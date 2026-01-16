@@ -31,9 +31,10 @@ Integer age = tuple2.item1();
 
 
 ## Stream support - Zip Streams
-1. Each tuple class has a static method `zip` that returns a Stream.
-2. This is used to zip `n` Streams and return a `Stream<Tuple<T0, T1, ... Tn>>`.
+1. Each tuple class has a dynamically created static method `zip` that returns a Stream.
+2. This is used to zip 'n' Streams `Stream<T0>, Stream<T1>, ... Stream<Tn>` into `Stream<Tuple(n)<T0, T1, ... Tn>>`.
 3. This is non-terminal operation, hence the data will not be collected.
+4. For the 'Tuple3' class, the 'zip' method takes 3 streams as input.
 The dynamically generated class for `Tuple3` will be similar to the one below.
 ```java
 public record Tuple3<T0, T1, T2>(
