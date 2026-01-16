@@ -1,5 +1,15 @@
 # com.aparigraha.tuple
-Create "Strongly Typed" Tuples with variable lengths in the compile time.
+Creates "Strongly Typed" Tuples with variable lengths in the compile time.
+
+## Use case
+In java different types are aggregated together only by classes.
+Sometimes creating multiple small classes for very small use cases might complicate flow. A collection of objects can be used, but it throws away static typing.
+Tuples solve this by having static placeholders with types.
+
+This library dynamically creates statically typed tuples with the required number of placeholders in the compile time.
+Since it's dynamic, if the usage of the tuple is removed, the generated tuple is also removed.
+
+Tuples can be used widely in 'Streams' as it involves multiple transformations in different stages. Hence, a zip function is added to these Tuples to zip multiple streams into a single stream of Tuple
 
 ## Basic Usage
 1. Add the annotation `@TupleSpec` on top of a class or a method.
