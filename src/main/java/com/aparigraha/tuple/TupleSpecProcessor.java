@@ -14,6 +14,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.Set;
 
 
@@ -52,14 +53,16 @@ public class TupleSpecProcessor extends AbstractProcessor {
                         size
                 ))
                 .map(this::generateTuple)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
                 .forEach(this::saveTupleSchema);
         return true;
     }
 
 
-    private TupleSchema generateTuple(TupleGenerationParams params) {
+    private Optional<TupleSchema> generateTuple(TupleGenerationParams params) {
         try {
-            return tupleGenerator.generate(params);
+            return Optional.of(tupleGenerator.generate(params));
         } catch (IOException exception) {
             if (processingEnv != null)
                 processingEnv.getMessager().printMessage(
@@ -70,13 +73,12 @@ public class TupleSpecProcessor extends AbstractProcessor {
                                 exception.getMessage()
                         )
                 );
-            return null;
+            return Optional.empty();
         }
     }
 
 
     private void saveTupleSchema(TupleSchema tupleSchema) {
-        if (tupleSchema == null) return;
         try {
             tupleSchemaWriter.write(tupleSchema.javaCode(), tupleSchema.completeClassName(), processingEnv);
         } catch (IOException exception) {
