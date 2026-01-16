@@ -1,5 +1,7 @@
 package com.aparigraha.tuple;
 
+import com.aparigraha.tuple.generator.TupleGenerationParams;
+import com.aparigraha.tuple.generator.TupleGenerator;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -39,9 +41,11 @@ class TupleGeneratorTest {
         """.trim();
 
         assertEquals(expected, tupleGenerator.generate(
-                "com.aparigraha.tuples",
-                "StudentInfo",
-                List.of("id", "name", "age", "isDayScholar")
+                new TupleGenerationParams(
+                        "com.aparigraha.tuples",
+                        "StudentInfo",
+                        List.of("id", "name", "age", "isDayScholar")
+                )
         ));
     }
 
@@ -76,10 +80,12 @@ class TupleGeneratorTest {
         """.trim();
 
         assertEquals(expected, tupleGenerator.generate(
-                "com.aparigraha.tuples",
-                "Tuple4",
-                "item",
-                4
+                new TupleGenerationParams(
+                        "com.aparigraha.tuples",
+                        "Tuple4",
+                        "item",
+                        4
+                )
         ));
     }
 }

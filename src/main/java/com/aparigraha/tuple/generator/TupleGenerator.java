@@ -1,4 +1,4 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.generator;
 
 import io.pebbletemplates.pebble.PebbleEngine;
 import io.pebbletemplates.pebble.loader.ClasspathLoader;
@@ -21,18 +21,10 @@ public class TupleGenerator {
     private static final PebbleTemplate template = getTemplate();
 
 
-    public String generate(String packageName, String className, List<String> fields) throws IOException {
+    public String generate(TupleGenerationParams params) throws IOException {
         Writer writer = new StringWriter();
-        template.evaluate(writer, templateParams(packageName, className, fields));
+        template.evaluate(writer, templateParams(params.packageName(), params.className(), params.fields()));
         return writer.toString();
-    }
-
-    public String generate(String packageName, String className, String fieldPrefix, int fieldCount) throws IOException {
-        return generate(
-                packageName,
-                className,
-                range(fieldCount).map(index -> fieldPrefix + index).toList()
-        );
     }
 
     private static Map<String, Object> templateParams(String packageName, String className, List<String> fields) {

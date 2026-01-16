@@ -1,5 +1,8 @@
 package com.aparigraha.tuple;
 
+import com.aparigraha.tuple.generator.TupleGenerationParams;
+import com.aparigraha.tuple.generator.TupleGenerator;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
@@ -42,10 +45,12 @@ public class TupleSpecProcessor extends AbstractProcessor {
     private String generateTuple(int size) {
         try {
             return tupleGenerator.generate(
-                    "com.aparigraha.tuples",
-                    "Tuple" + size,
-                    "item",
-                    size
+                    new TupleGenerationParams(
+                            "com.aparigraha.tuples",
+                            "Tuple" + size,
+                            "item",
+                            size
+                    )
             );
         } catch (IOException exception) {
             processingEnv.getMessager().printMessage(
