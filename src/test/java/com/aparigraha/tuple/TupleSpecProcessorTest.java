@@ -11,6 +11,8 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.annotation.processing.RoundEnvironment;
+import javax.lang.model.element.Name;
+import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import java.io.IOException;
 import java.util.List;
@@ -31,6 +33,8 @@ class TupleSpecProcessorTest {
 
     @Spy
     private RoundEnvironment roundEnvironment;
+
+    private TypeElement mockAnnotation = mockAnnotation();
 
 
     @Test
@@ -97,11 +101,11 @@ class TupleSpecProcessorTest {
 
         doReturn(Set.of(element1, element2))
                 .when(roundEnvironment)
-                .getElementsAnnotatedWith(TupleSpec.class);
+                .getElementsAnnotatedWith(mockAnnotation);
 
         TupleSpecProcessor tupleSpecProcessor = new TupleSpecProcessor(tupleGenerator, tupleSchemaWriter);
 
-        assertTrue(tupleSpecProcessor.process(Set.of(), roundEnvironment));
+        assertTrue(tupleSpecProcessor.process(Set.of(mockAnnotation), roundEnvironment));
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple4"), eq("com.aparigraha.tuples.Tuple4"), any());
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple2"), eq("com.aparigraha.tuples.Tuple2"), any());
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple3"), eq("com.aparigraha.tuples.Tuple3"), any());
@@ -173,11 +177,11 @@ class TupleSpecProcessorTest {
 
         doReturn(Set.of(element1, element2))
                 .when(roundEnvironment)
-                .getElementsAnnotatedWith(TupleSpec.class);
+                .getElementsAnnotatedWith(mockAnnotation);
 
         TupleSpecProcessor tupleSpecProcessor = new TupleSpecProcessor(tupleGenerator, tupleSchemaWriter);
 
-        assertTrue(tupleSpecProcessor.process(Set.of(), roundEnvironment));
+        assertTrue(tupleSpecProcessor.process(Set.of(mockAnnotation), roundEnvironment));
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple4"), eq("com.aparigraha.tuples.Tuple4"), any());
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple2"), eq("com.aparigraha.tuples.Tuple2"), any());
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple3"), eq("com.aparigraha.tuples.Tuple3"), any());
@@ -219,11 +223,11 @@ class TupleSpecProcessorTest {
 
         doReturn(Set.of(element1))
                 .when(roundEnvironment)
-                .getElementsAnnotatedWith(TupleSpec.class);
+                .getElementsAnnotatedWith(mockAnnotation);
 
         TupleSpecProcessor tupleSpecProcessor = new TupleSpecProcessor(tupleGenerator, tupleSchemaWriter);
 
-        assertTrue(tupleSpecProcessor.process(Set.of(), roundEnvironment));
+        assertTrue(tupleSpecProcessor.process(Set.of(mockAnnotation), roundEnvironment));
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple2"), eq("com.aparigraha.tuples.Tuple2"), any());
         verify(tupleSchemaWriter, times(0)).write(eq("Tuple code for Tuple4"), eq("com.aparigraha.tuples.Tuple4"), any());
     }
@@ -271,12 +275,31 @@ class TupleSpecProcessorTest {
 
         doReturn(Set.of(element1))
                 .when(roundEnvironment)
-                .getElementsAnnotatedWith(TupleSpec.class);
+                .getElementsAnnotatedWith(mockAnnotation);
 
         TupleSpecProcessor tupleSpecProcessor = new TupleSpecProcessor(tupleGenerator, tupleSchemaWriter);
 
-        assertTrue(tupleSpecProcessor.process(Set.of(), roundEnvironment));
+        assertTrue(tupleSpecProcessor.process(Set.of(mockAnnotation), roundEnvironment));
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple2"), eq("com.aparigraha.tuples.Tuple2"), any());
         verify(tupleSchemaWriter).write(eq("Tuple code for Tuple4"), eq("com.aparigraha.tuples.Tuple4"), any());
+    }
+
+
+    @Test
+    void shouldSkipTupleGenerationAndReturnFalseIfAnnotationDoesntMatchTupleSpec() throws IOException {
+        TupleSpecProcessor tupleSpecProcessor = new TupleSpecProcessor(tupleGenerator, tupleSchemaWriter);
+
+        assertFalse(tupleSpecProcessor.process(Set.of(), roundEnvironment));
+        verify(tupleGenerator, times(0)).generate(any());
+        verify(tupleSchemaWriter, times(0)).write(any(), any(), any());
+    }
+
+
+    private TypeElement mockAnnotation() {
+        var annotation = mock(TypeElement.class);
+        var name = mock(Name.class);
+        when(name.toString()).thenReturn("com.aparigraha.tuple.TupleSpec");
+        when(annotation.getQualifiedName()).thenReturn(name);
+        return annotation;
     }
 }

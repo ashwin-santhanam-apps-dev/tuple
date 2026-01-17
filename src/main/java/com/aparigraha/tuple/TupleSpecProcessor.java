@@ -41,8 +41,9 @@ public class TupleSpecProcessor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        roundEnv.getElementsAnnotatedWith(TupleSpec.class)
-                .stream()
+        annotations.stream()
+                .map(roundEnv::getElementsAnnotatedWith)
+                .flatMap(Set::stream)
                 .map(element -> element.getAnnotation(TupleSpec.class))
                 .flatMap(tupleSpec -> Arrays.stream(tupleSpec.value()).boxed())
                 .distinct()
@@ -56,7 +57,16 @@ public class TupleSpecProcessor extends AbstractProcessor {
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(this::saveTupleSchema);
-        return true;
+
+        return canClaim(annotations);
+    }
+
+
+    private boolean canClaim(Set<? extends TypeElement> annotations) {
+        var supportedAnnotations = getSupportedAnnotationTypes();
+        return annotations.stream()
+                .map(a -> a.getQualifiedName().toString())
+                .anyMatch(supportedAnnotations::contains);
     }
 
 
