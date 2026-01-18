@@ -1,0 +1,8 @@
+package com.aparigraha.tuple.dynamic;
+
+
+public class DynamicTuple {
+    public static Object of(Object... args) {
+        return DynamicTupleSeed.of(args);
+    }
+}
