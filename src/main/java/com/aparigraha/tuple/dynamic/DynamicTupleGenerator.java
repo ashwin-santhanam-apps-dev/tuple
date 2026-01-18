@@ -1,31 +1,39 @@
 package com.aparigraha.tuple.dynamic;
 
-import io.pebbletemplates.pebble.PebbleEngine;
-import io.pebbletemplates.pebble.loader.ClasspathLoader;
-import io.pebbletemplates.pebble.template.PebbleTemplate;
+import com.aparigraha.tuple.templates.PebbleTemplateProcessor;
 
 import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 
 public class DynamicTupleGenerator {
-    private static final PebbleTemplate template = getTemplate();
+    private final PebbleTemplateProcessor pebbleTemplateProcessor;
+    private final StaticTupleFactoryGenerator staticTupleFactoryGenerator;
 
-    public String generate() throws IOException {
-        Writer writer = new StringWriter();
-        template.evaluate(writer);
-        return writer.toString();
+
+    public DynamicTupleGenerator(
+            PebbleTemplateProcessor pebbleTemplateProcessor,
+            StaticTupleFactoryGenerator staticTupleFactoryGenerator
+    ) {
+        this.pebbleTemplateProcessor = pebbleTemplateProcessor;
+        this.staticTupleFactoryGenerator = staticTupleFactoryGenerator;
     }
 
-    private static PebbleTemplate getTemplate() {
-        ClasspathLoader loader = new ClasspathLoader();
-        loader.setPrefix("templates");
-        PebbleEngine engine = new PebbleEngine.Builder()
-                .strictVariables(true)
-                .autoEscaping(false)
-                .loader(loader)
-                .build();
-        return engine.getTemplate("DynamicTuple.peb");
+
+    public String generate(Set<Integer> tupleSizes) throws IOException {
+        List<String> tupleFactoryMethods = new ArrayList<>();
+        for (int tupleSize: tupleSizes) {
+            tupleFactoryMethods.add(staticTupleFactoryGenerator.generate(tupleSize));
+        }
+
+        return pebbleTemplateProcessor.process(
+                "DynamicTuple.peb",
+                Map.of("staticFactoryMethods", String.join("\n", tupleFactoryMethods))
+        );
     }
+
 }

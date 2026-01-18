@@ -1,9 +1,11 @@
 package com.aparigraha.tuple;
 
 import com.aparigraha.tuple.dynamic.DynamicTupleGenerator;
+import com.aparigraha.tuple.dynamic.StaticTupleFactoryGenerator;
 import com.aparigraha.tuple.generator.TupleGenerationParams;
 import com.aparigraha.tuple.generator.TupleGenerator;
 import com.aparigraha.tuple.generator.TupleSchema;
+import com.aparigraha.tuple.templates.PebbleTemplateProcessor;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
@@ -36,8 +38,19 @@ public class TupleSpecProcessor extends AbstractProcessor {
         this.dynamicTupleGenerator = dynamicTupleGenerator;
     }
 
+
+    public TupleSpecProcessor(PebbleTemplateProcessor pebbleTemplateProcessor) {
+        this(
+                new TupleGenerator(),
+                new DynamicTupleGenerator(
+                        pebbleTemplateProcessor,
+                        new StaticTupleFactoryGenerator(pebbleTemplateProcessor)
+                )
+        );
+    }
+
     public TupleSpecProcessor() {
-        this(new TupleGenerator(), new DynamicTupleGenerator());
+        this(new PebbleTemplateProcessor("templates"));
     }
 
 
@@ -82,7 +95,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
                     .map(Optional::get)
                     .forEach(tupleSchema -> save(tupleSchema.javaCode(), tupleSchema.completeClassName()));
 
-            generateDynamicTupleFactoryClass();
+            generateDynamicTupleFactoryClass(fields);
             hasGenerated = true;
         }
         return false;
@@ -101,9 +114,9 @@ public class TupleSpecProcessor extends AbstractProcessor {
     }
 
 
-    private void generateDynamicTupleFactoryClass() {
+    private void generateDynamicTupleFactoryClass(Set<Integer> fields) {
         try {
-            save(dynamicTupleGenerator.generate(), packageName + ".DynamicTuple");
+            save(dynamicTupleGenerator.generate(fields), packageName + ".DynamicTuple");
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,

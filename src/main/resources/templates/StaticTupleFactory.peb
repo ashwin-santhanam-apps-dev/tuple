@@ -1,0 +1,3 @@
+public static <{{ genericsSequence }}> {{ className }}<{{ genericsSequence }}> of({{ genericsParameter }}) {
+    return new {{ className }}<>({{ parameterSequence }});
+}
