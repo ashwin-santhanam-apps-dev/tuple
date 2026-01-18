@@ -5,7 +5,6 @@ import com.sun.source.tree.LambdaExpressionTree;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.util.TreePath;
 import com.sun.source.util.TreePathScanner;
-import com.sun.source.util.TreeScanner;
 import com.sun.source.util.Trees;
 
 import javax.annotation.processing.*;
@@ -13,11 +12,10 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
-import javax.tools.Diagnostic;
 import java.util.*;
 
 
-@SupportedAnnotationTypes("com.aparigraha.tuple.TupleSpec")
+@SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class TupleSpecProcessor extends AbstractProcessor {
     private Trees trees;
