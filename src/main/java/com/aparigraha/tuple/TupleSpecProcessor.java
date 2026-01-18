@@ -1,12 +1,20 @@
 package com.aparigraha.tuple;
 
 import com.aparigraha.tuple.dynamic.DynamicTupleGenerator;
+import com.aparigraha.tuple.dynamic.StaticTupleFactoryGenerator;
 import com.aparigraha.tuple.generator.TupleGenerationParams;
 import com.aparigraha.tuple.generator.TupleGenerator;
 import com.aparigraha.tuple.generator.TupleSchema;
+import com.aparigraha.tuple.templates.PebbleTemplateProcessor;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
+import com.sun.tools.javac.processing.JavacProcessingEnvironment;
+import com.sun.tools.javac.tree.JCTree;
+import com.sun.tools.javac.tree.TreeMaker;
+import com.sun.tools.javac.tree.TreeTranslator;
+import com.sun.tools.javac.util.Names;
+import com.sun.tools.javac.util.List;
 
 import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
@@ -30,44 +38,69 @@ public class TupleSpecProcessor extends AbstractProcessor {
     private final TupleGenerator tupleGenerator;
     private boolean hasGenerated = false;
     private Trees trees;
+    private TreeMaker treeMaker;
+    private Names names;
 
     public TupleSpecProcessor(TupleGenerator tupleGenerator, DynamicTupleGenerator dynamicTupleGenerator) {
         this.tupleGenerator = tupleGenerator;
         this.dynamicTupleGenerator = dynamicTupleGenerator;
     }
 
+
+    public TupleSpecProcessor(PebbleTemplateProcessor pebbleTemplateProcessor) {
+        this(
+                new TupleGenerator(),
+                new DynamicTupleGenerator(
+                        pebbleTemplateProcessor,
+                        new StaticTupleFactoryGenerator(pebbleTemplateProcessor)
+                )
+        );
+    }
+
     public TupleSpecProcessor() {
-        this(new TupleGenerator(), new DynamicTupleGenerator());
+        this(new PebbleTemplateProcessor("templates"));
     }
 
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
+        JavacProcessingEnvironment hostEnv = (JavacProcessingEnvironment) processingEnv;
         this.trees = Trees.instance(processingEnv);
+        this.treeMaker = TreeMaker.instance(hostEnv.getContext());
+        this.names = Names.instance(hostEnv.getContext());
     }
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (!hasGenerated) {
             var fields = new HashSet<Integer>();
-            var methodCallScanner = new TreePathScanner<Void, Void>() {
+            var treeTranslator = new TreeTranslator() {
                 @Override
-                public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-                    if (isTargetMethod(node)) {
-                        fields.add(node.getArguments().size());
+                public void visitApply(JCTree.JCMethodInvocation tree) {
+                    super.visitApply(tree);
+                    if (isTargetMethod(tree)) {
+                        fields.add(tree.args.size());
+                        tree.args = sort(tree.args);
                     }
-                    return super.visitMethodInvocation(node, p);
                 }
 
-                private boolean isTargetMethod(MethodInvocationTree node) {
-                    return node.getMethodSelect().toString().equals("DynamicTuple.of");
+                private static List<JCTree.JCExpression> sort(List<JCTree.JCExpression> treeArgs) {
+                    java.util.List<JCTree.JCExpression> args = new ArrayList<>(treeArgs);
+                    args.sort(Comparator.comparing(JCTree::toString));
+                    return List.from(args);
+                }
+
+                private boolean isTargetMethod(JCTree.JCMethodInvocation tree) {
+                    return tree.getMethodSelect().toString().equals("DynamicTuple.of");
                 }
             };
 
             for (Element element : roundEnv.getRootElements()) {
                 if (element.getKind().isClass() || element.getKind().isInterface()) {
-                    methodCallScanner.scan(trees.getPath(element), null);
+                    if (trees.getTree(element) instanceof JCTree tree) {
+                        tree.accept(treeTranslator);
+                    }
                 }
             }
 
@@ -82,7 +115,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
                     .map(Optional::get)
                     .forEach(tupleSchema -> save(tupleSchema.javaCode(), tupleSchema.completeClassName()));
 
-            generateDynamicTupleFactoryClass();
+            generateDynamicTupleFactoryClass(fields);
             hasGenerated = true;
         }
         return false;
@@ -101,9 +134,9 @@ public class TupleSpecProcessor extends AbstractProcessor {
     }
 
 
-    private void generateDynamicTupleFactoryClass() {
+    private void generateDynamicTupleFactoryClass(Set<Integer> fields) {
         try {
-            save(dynamicTupleGenerator.generate(), packageName + ".DynamicTuple");
+            save(dynamicTupleGenerator.generate(fields), packageName + ".DynamicTuple");
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
