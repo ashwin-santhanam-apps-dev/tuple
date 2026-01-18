@@ -1,6 +1,9 @@
 package com.aparigraha.tuple;
 
 import com.aparigraha.tuple.dynamic.DynamicTupleGenerator;
+import com.aparigraha.tuple.generator.TupleGenerationParams;
+import com.aparigraha.tuple.generator.TupleGenerator;
+import com.aparigraha.tuple.generator.TupleSchema;
 import com.sun.source.tree.MethodInvocationTree;
 import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
@@ -19,17 +22,22 @@ import java.util.*;
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class TupleSpecProcessor extends AbstractProcessor {
-    private final DynamicTupleGenerator dynamicTupleGenerator;
-    private boolean hasGenerated = false;
+    private static final String packageName = "com.aparigraha.tuple.dynamic";
+    private static final String classPrefix = "Tuple";
+    private static final String fieldPrefix = "item";
 
+    private final DynamicTupleGenerator dynamicTupleGenerator;
+    private final TupleGenerator tupleGenerator;
+    private boolean hasGenerated = false;
     private Trees trees;
 
-    public TupleSpecProcessor(DynamicTupleGenerator dynamicTupleGenerator) {
+    public TupleSpecProcessor(TupleGenerator tupleGenerator, DynamicTupleGenerator dynamicTupleGenerator) {
+        this.tupleGenerator = tupleGenerator;
         this.dynamicTupleGenerator = dynamicTupleGenerator;
     }
 
     public TupleSpecProcessor() {
-        this(new DynamicTupleGenerator());
+        this(new TupleGenerator(), new DynamicTupleGenerator());
     }
 
 
@@ -63,7 +71,16 @@ public class TupleSpecProcessor extends AbstractProcessor {
                 }
             }
 
-            System.out.println(fields);
+            fields.stream()
+                    .map(size -> new TupleGenerationParams(
+                            packageName,
+                            classPrefix + size,
+                            fieldPrefix,
+                            size
+                    )).map(this::generateTuple)
+                    .filter(Optional::isPresent)
+                    .map(Optional::get)
+                    .forEach(tupleSchema -> save(tupleSchema.javaCode(), tupleSchema.completeClassName()));
 
             generateDynamicTupleFactoryClass();
             hasGenerated = true;
@@ -71,12 +88,36 @@ public class TupleSpecProcessor extends AbstractProcessor {
         return false;
     }
 
+    private Optional<TupleSchema> generateTuple(TupleGenerationParams params) {
+        try {
+            return Optional.of(tupleGenerator.generate(params));
+        } catch (IOException e) {
+            processingEnv.getMessager().printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "Error creating Tuple class: " + params.className() + "\n" + e.getMessage()
+            );
+            return Optional.empty();
+        }
+    }
+
 
     private void generateDynamicTupleFactoryClass() {
         try {
-            JavaFileObject javaFileObject = processingEnv.getFiler().createSourceFile("com.aparigraha.tuple.dynamic.DynamicTuple");
+            save(dynamicTupleGenerator.generate(), packageName + ".DynamicTuple");
+        } catch (IOException e) {
+            processingEnv.getMessager().printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "Error creating DynamicTuple class"
+            );
+        }
+    }
+
+
+    private void save(String javaCode, String path) {
+        try {
+            JavaFileObject javaFileObject = processingEnv.getFiler().createSourceFile(path);
             try (Writer writer = javaFileObject.openWriter()) {
-                writer.write(dynamicTupleGenerator.generate());
+                writer.write(javaCode);
             }
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
