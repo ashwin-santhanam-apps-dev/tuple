@@ -1,5 +1,6 @@
 package com.aparigraha.tuple;
 
+import com.aparigraha.tuple.dynamic.JavaFileWriter;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerator;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerationParam;
 import com.aparigraha.tuple.dynamic.factories.StaticTupleFactoryGenerator;
@@ -13,9 +14,7 @@ import javax.annotation.processing.*;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
-import javax.tools.JavaFileObject;
 import java.io.IOException;
-import java.io.Writer;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -29,15 +28,18 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     private final DynamicTupleGenerator dynamicTupleGenerator;
     private final TupleGenerator tupleGenerator;
     private final MethodScanner methodScanner;
+    private final JavaFileWriter javaFileWriter;
 
     public TupleSpecProcessor(
             TupleGenerator tupleGenerator,
             DynamicTupleGenerator dynamicTupleGenerator,
-            MethodScanner methodScanner
+            MethodScanner methodScanner,
+            JavaFileWriter javaFileWriter
     ) {
         this.tupleGenerator = tupleGenerator;
         this.dynamicTupleGenerator = dynamicTupleGenerator;
         this.methodScanner = methodScanner;
+        this.javaFileWriter = javaFileWriter;
     }
 
     public TupleSpecProcessor(PebbleTemplateProcessor pebbleTemplateProcessor) {
@@ -48,7 +50,8 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                         new StaticTupleFactoryGenerator(pebbleTemplateProcessor),
                         new ZipperMethodGenerator(pebbleTemplateProcessor)
                 ),
-                new MethodScanner()
+                new MethodScanner(),
+                new JavaFileWriter()
         );
     }
 
@@ -132,10 +135,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
 
     private void save(GeneratedClassSchema schema) {
         try {
-            JavaFileObject javaFileObject = processingEnv.getFiler().createSourceFile(schema.completeClassName());
-            try (Writer writer = javaFileObject.openWriter()) {
-                writer.write(schema.javaCode());
-            }
+            javaFileWriter.write(processingEnv, schema);
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
