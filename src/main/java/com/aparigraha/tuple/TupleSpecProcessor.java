@@ -75,6 +75,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         if (!hasGenerated) {
             var fields = new HashSet<Integer>();
+//          https://gemini.google.com/share/4e2535cf2c4f
             var treeTranslator = new TreeTranslator() {
                 @Override
                 public void visitApply(JCTree.JCMethodInvocation tree) {
