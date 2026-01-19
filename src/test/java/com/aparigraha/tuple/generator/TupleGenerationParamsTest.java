@@ -1,6 +1,5 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.generator;
 
-import com.aparigraha.tuple.generator.TupleGenerationParams;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

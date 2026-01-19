@@ -1,7 +1,5 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.generator;
 
-import com.aparigraha.tuple.generator.TupleGenerationParams;
-import com.aparigraha.tuple.generator.TupleGenerator;
 import com.aparigraha.tuple.templates.PebbleTemplateProcessor;
 import org.junit.jupiter.api.Test;
 
