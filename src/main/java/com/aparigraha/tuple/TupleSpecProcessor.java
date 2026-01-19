@@ -32,9 +32,6 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     private final DynamicTupleGenerator dynamicTupleGenerator;
     private final TupleGenerator tupleGenerator;
 
-    private Trees trees;
-
-
     public TupleSpecProcessor(TupleGenerator tupleGenerator, DynamicTupleGenerator dynamicTupleGenerator) {
         this.tupleGenerator = tupleGenerator;
         this.dynamicTupleGenerator = dynamicTupleGenerator;
@@ -58,15 +55,10 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
 
 
     @Override
-    public synchronized void init(ProcessingEnvironment processingEnv) {
-        super.init(processingEnv);
-        this.trees = Trees.instance(processingEnv);
-    }
-
-
-    @Override
     public boolean processFirstRound(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         var fields = new HashSet<Integer>();
+        var trees = Trees.instance(processingEnv);
+
         var methodCallScanner = new TreePathScanner<Void, Void>() {
             @Override
             public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
@@ -82,11 +74,9 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
             }
         };
 
-        for (Element element : roundEnv.getRootElements()) {
-            if (element.getKind().isClass() || element.getKind().isInterface()) {
-                methodCallScanner.scan(trees.getPath(element), null);
-            }
-        }
+        roundEnv.getRootElements().stream()
+                .filter(element -> element.getKind().isClass() || element.getKind().isInterface())
+                .forEach(element -> methodCallScanner.scan(trees.getPath(element), null));
 
         fields.stream()
                 .map(size -> new TupleGenerationParams(
