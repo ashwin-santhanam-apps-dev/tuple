@@ -1,4 +1,4 @@
-package com.aparigraha.tuple.dynamic;
+package com.aparigraha.tuple.dynamic.entities;
 
 import org.junit.jupiter.api.Test;
 

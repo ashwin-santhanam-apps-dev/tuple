@@ -1,5 +1,6 @@
-package com.aparigraha.tuple.dynamic;
+package com.aparigraha.tuple.dynamic.entities;
 
+import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
 import com.aparigraha.tuple.dynamic.templates.PebbleTemplateProcessor;
 
 import java.io.IOException;

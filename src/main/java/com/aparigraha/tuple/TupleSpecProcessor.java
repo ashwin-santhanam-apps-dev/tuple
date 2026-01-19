@@ -1,10 +1,10 @@
 package com.aparigraha.tuple;
 
-import com.aparigraha.tuple.dynamic.DynamicTupleGenerator;
-import com.aparigraha.tuple.dynamic.StaticTupleFactoryGenerator;
-import com.aparigraha.tuple.dynamic.ZipperMethodGenerator;
-import com.aparigraha.tuple.dynamic.TupleGenerationParams;
-import com.aparigraha.tuple.dynamic.TupleGenerator;
+import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerator;
+import com.aparigraha.tuple.dynamic.factories.StaticTupleFactoryGenerator;
+import com.aparigraha.tuple.dynamic.factories.ZipperMethodGenerator;
+import com.aparigraha.tuple.dynamic.entities.TupleGenerationParams;
+import com.aparigraha.tuple.dynamic.entities.TupleGenerator;
 import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
 import com.aparigraha.tuple.dynamic.templates.PebbleTemplateProcessor;
 import com.sun.source.tree.MethodInvocationTree;
