@@ -9,6 +9,8 @@ public class JavaTemplate {
     public static final String wildcard = "?";
     public static final String tupleEqualsParameter = "that";
     public static final String listToTupleParameter = "zipped";
+    public static final String parameterPrefix = "item";
+    public static final String classPrefix = "Tuple";
 
     public static String genericsSequence(int size) {
         return csvOf(generics(size));
@@ -55,5 +57,22 @@ public class JavaTemplate {
 
     public static String logicalAndOf(Stream<String> conditions) {
         return conditions.reduce("%s && %s"::formatted).orElseThrow();
+    }
+
+    public static String genericsParameter(int size) {
+        return csvOf(
+                range(size)
+                        .map(index -> "%s%d %s%d".formatted(genericsPrefix, index, parameterPrefix, index))
+        );
+    }
+
+    public static String parameterSequence(int size) {
+        return csvOf(
+                range(size).map(index -> parameterPrefix + index)
+        );
+    }
+
+    public static String className(int size) {
+        return classPrefix + size;
     }
 }

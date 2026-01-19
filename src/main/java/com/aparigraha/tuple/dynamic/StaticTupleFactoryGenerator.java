@@ -5,7 +5,7 @@ import com.aparigraha.tuple.templates.PebbleTemplateProcessor;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.aparigraha.tuple.templates.PebbleTemplateProcessor.*;
+import static com.aparigraha.tuple.templates.JavaTemplate.*;
 
 
 public class StaticTupleFactoryGenerator {
