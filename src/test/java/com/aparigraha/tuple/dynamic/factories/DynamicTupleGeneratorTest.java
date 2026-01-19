@@ -33,7 +33,15 @@ class DynamicTupleGeneratorTest {
             }
         }
         """.trim();
-        assertEquals(expected, generator.generate(Set.of()));
+        var schema = generator.generate(new DynamicTupleGenerationParam(
+                "com.aparigraha.tuple.dynamic",
+                "DynamicTuple",
+                "of",
+                Set.of()
+        ));
+        assertEquals(expected, schema.javaCode());
+        assertEquals("com.aparigraha.tuple.dynamic", schema.packageName());
+        assertEquals("DynamicTuple", schema.className());
     }
 
 
@@ -75,6 +83,14 @@ class DynamicTupleGeneratorTest {
         var tupleSizes = new LinkedHashSet<Integer>();
         tupleSizes.add(2);
         tupleSizes.add(3);
-        assertEquals(expected, generator.generate(tupleSizes));
+        var schema = generator.generate(new DynamicTupleGenerationParam(
+                "com.aparigraha.tuple.dynamic",
+                "DynamicTuple",
+                "of",
+                tupleSizes
+        ));
+        assertEquals(expected, schema.javaCode());
+        assertEquals("com.aparigraha.tuple.dynamic", schema.packageName());
+        assertEquals("DynamicTuple", schema.className());
     }
 }

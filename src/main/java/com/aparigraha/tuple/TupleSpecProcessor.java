@@ -1,6 +1,7 @@
 package com.aparigraha.tuple;
 
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerator;
+import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerationParam;
 import com.aparigraha.tuple.dynamic.factories.StaticTupleFactoryGenerator;
 import com.aparigraha.tuple.dynamic.factories.ZipperMethodGenerator;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerationParams;
@@ -28,17 +29,17 @@ import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.*;
 public class TupleSpecProcessor extends AbstractProcessor {
     private static final Set<String> targetMethods = Set.of(dynamicTupleFactoryMethod(), dynamicTupleZipMethod());
 
-
     private final DynamicTupleGenerator dynamicTupleGenerator;
     private final TupleGenerator tupleGenerator;
+
     private boolean hasGenerated = false;
     private Trees trees;
+
 
     public TupleSpecProcessor(TupleGenerator tupleGenerator, DynamicTupleGenerator dynamicTupleGenerator) {
         this.tupleGenerator = tupleGenerator;
         this.dynamicTupleGenerator = dynamicTupleGenerator;
     }
-
 
     public TupleSpecProcessor(PebbleTemplateProcessor pebbleTemplateProcessor) {
         this(
@@ -51,6 +52,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
         );
     }
 
+    // Required constructor for Service Discovery
     public TupleSpecProcessor() {
         this(new PebbleTemplateProcessor("templates"));
     }
@@ -61,6 +63,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
         super.init(processingEnv);
         this.trees = Trees.instance(processingEnv);
     }
+
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
@@ -93,18 +96,25 @@ public class TupleSpecProcessor extends AbstractProcessor {
                             classPrefix + size,
                             parameterPrefix,
                             size
-                    )).map(this::generateTuple)
+                    )).map(this::generateTupleClass)
                     .filter(Optional::isPresent)
                     .map(Optional::get)
-                    .forEach(generatedClassSchema -> save(generatedClassSchema.javaCode(), generatedClassSchema.completeClassName()));
+                    .forEach(this::save);
 
-            generateDynamicTupleFactoryClass(fields);
+            generateDynamicTupleClass(new DynamicTupleGenerationParam(
+                    packageName,
+                    dynamicTupleClassName,
+                    dynamicTupleFactoryMethodName,
+                    fields
+            )).ifPresent(this::save);
+
             hasGenerated = true;
         }
         return false;
     }
 
-    private Optional<GeneratedClassSchema> generateTuple(TupleGenerationParams params) {
+
+    private Optional<GeneratedClassSchema> generateTupleClass(TupleGenerationParams params) {
         try {
             return Optional.of(tupleGenerator.generate(params));
         } catch (IOException e) {
@@ -116,24 +126,23 @@ public class TupleSpecProcessor extends AbstractProcessor {
         }
     }
 
-
-    private void generateDynamicTupleFactoryClass(Set<Integer> fields) {
+    private Optional<GeneratedClassSchema> generateDynamicTupleClass(DynamicTupleGenerationParam param) {
         try {
-            save(dynamicTupleGenerator.generate(fields), packageName + ".DynamicTuple");
+            return Optional.of(dynamicTupleGenerator.generate(param));
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
                     "Error creating DynamicTuple class"
             );
+            return Optional.empty();
         }
     }
 
-
-    private void save(String javaCode, String path) {
+    private void save(GeneratedClassSchema schema) {
         try {
-            JavaFileObject javaFileObject = processingEnv.getFiler().createSourceFile(path);
+            JavaFileObject javaFileObject = processingEnv.getFiler().createSourceFile(schema.completeClassName());
             try (Writer writer = javaFileObject.openWriter()) {
-                writer.write(javaCode);
+                writer.write(schema.javaCode());
             }
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
