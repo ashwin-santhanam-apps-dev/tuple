@@ -1,11 +1,11 @@
-package com.aparigraha.tuple.dynamic;
+package {{ packageName }};
 
 import java.util.List;
 import java.util.stream.Stream;
 
 
-public class DynamicTuple {
-    public static Object of(Object... args) {
+public class {{ dynamicTupleClassName }} {
+    public static Object {{ dynamicTupleFactoryMethodName }}(Object... args) {
         return DynamicTupleSeed.of(args);
     }
 {{ staticFactoryMethods }}

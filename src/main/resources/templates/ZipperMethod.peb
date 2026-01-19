@@ -1,4 +1,4 @@
-public static <{{ genericsSequence }}> Stream<{{ className }}<{{ genericsSequence }}>> zip({{ zipParameters }}) {
+public static <{{ genericsSequence }}> Stream<{{ className }}<{{ genericsSequence }}>> {{ dynamicTupleZipMethodName }}({{ zipParameters }}) {
     List<Stream<Object>> streams = List.of({{ objectStreamSequence }});
     return DynamicTupleSeed.zip(streams).map({{ listToTupleParameter }} -> new {{ className }}<>({{ listToTupleSequence }}));
 }

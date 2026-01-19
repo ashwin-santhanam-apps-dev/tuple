@@ -11,6 +11,19 @@ public class JavaTemplate {
     public static final String listToTupleParameter = "zipped";
     public static final String parameterPrefix = "item";
     public static final String classPrefix = "Tuple";
+    public static final String dynamicTupleClassName = "DynamicTuple";
+    public static final String dynamicTupleFactoryMethodName = "of";
+    public static final String dynamicTupleZipMethodName = "zip";
+    public static final String packageName = "com.aparigraha.tuple.dynamic";
+
+
+    public static String dynamicTupleFactoryMethod() {
+        return dynamicTupleClassName + "." + dynamicTupleFactoryMethodName;
+    }
+
+    public static String dynamicTupleZipMethod() {
+        return dynamicTupleClassName + "." + dynamicTupleZipMethodName;
+    }
 
     public static String genericsSequence(int size) {
         return csvOf(generics(size));

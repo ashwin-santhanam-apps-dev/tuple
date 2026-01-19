@@ -20,6 +20,7 @@ public class ZipperMethodGenerator {
                 "genericsSequence", genericsSequence(size),
                 "className", className(size),
                 "objectStreamSequence", objectStreamSequence(size),
+                "dynamicTupleZipMethodName", dynamicTupleZipMethodName,
                 "zipParameters", zipParameters(size),
                 "listToTupleParameter", listToTupleParameter,
                 "listToTupleSequence", listToTupleSequence(size)

@@ -21,14 +21,13 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
 
+import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.*;
 
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
 public class TupleSpecProcessor extends AbstractProcessor {
-    private static final String packageName = "com.aparigraha.tuple.dynamic";
-    private static final String classPrefix = "Tuple";
-    private static final String fieldPrefix = "item";
-    private static final Set<String> targetMethods = Set.of("DynamicTuple.of", "DynamicTuple.zip");
+    private static final Set<String> targetMethods = Set.of(dynamicTupleFactoryMethod(), dynamicTupleZipMethod());
+
 
     private final DynamicTupleGenerator dynamicTupleGenerator;
     private final TupleGenerator tupleGenerator;
@@ -92,7 +91,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
                     .map(size -> new TupleGenerationParams(
                             packageName,
                             classPrefix + size,
-                            fieldPrefix,
+                            parameterPrefix,
                             size
                     )).map(this::generateTuple)
                     .filter(Optional::isPresent)
