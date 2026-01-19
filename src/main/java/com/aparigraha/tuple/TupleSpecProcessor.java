@@ -41,7 +41,7 @@ public class TupleSpecProcessor extends AbstractProcessor {
 
     public TupleSpecProcessor(PebbleTemplateProcessor pebbleTemplateProcessor) {
         this(
-                new TupleGenerator(),
+                new TupleGenerator(pebbleTemplateProcessor),
                 new DynamicTupleGenerator(
                         pebbleTemplateProcessor,
                         new StaticTupleFactoryGenerator(pebbleTemplateProcessor)

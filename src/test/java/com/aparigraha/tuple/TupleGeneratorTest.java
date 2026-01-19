@@ -2,6 +2,7 @@ package com.aparigraha.tuple;
 
 import com.aparigraha.tuple.generator.TupleGenerationParams;
 import com.aparigraha.tuple.generator.TupleGenerator;
+import com.aparigraha.tuple.templates.PebbleTemplateProcessor;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -12,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TupleGeneratorTest {
     @Test
     void shouldGenerateStudentInfoClassWithGivenFields() throws IOException {
-        TupleGenerator tupleGenerator = new TupleGenerator();
+        TupleGenerator tupleGenerator = new TupleGenerator(new PebbleTemplateProcessor("templates"));
 
         var expected = """
         package com.aparigraha.tuples;
@@ -55,7 +56,7 @@ class TupleGeneratorTest {
 
     @Test
     void shouldGenerateTupleClassWith4Fields() throws IOException {
-        TupleGenerator tupleGenerator = new TupleGenerator();
+        TupleGenerator tupleGenerator = new TupleGenerator(new PebbleTemplateProcessor("templates"));
         var expected = """
         package com.aparigraha.tuples;
         
