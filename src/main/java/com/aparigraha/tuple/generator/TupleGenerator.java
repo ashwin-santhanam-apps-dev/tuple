@@ -35,12 +35,6 @@ public class TupleGenerator {
                         "wildcardGenericSequence", wildcardGenericSequence(size),
                         "tupleEqualsParameter", tupleEqualsParameter,
                         "tupleEqualsCondition", tupleEqualsCondition(fields)
-                ),
-                "zipMethod", Map.of(
-                        "zipParameters", zipParameters(size),
-                        "objectStreamSequence", objectStreamSequence(size),
-                        "listToTupleParameter", listToTupleParameter,
-                        "listToTupleSequence", listToTupleSequence(size)
                 )
         );
     }
