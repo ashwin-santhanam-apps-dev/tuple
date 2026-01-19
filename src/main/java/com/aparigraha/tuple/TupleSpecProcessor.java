@@ -26,13 +26,12 @@ import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.*;
 
 @SupportedAnnotationTypes("*")
 @SupportedSourceVersion(SourceVersion.RELEASE_21)
-public class TupleSpecProcessor extends AbstractProcessor {
+public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     private static final Set<String> targetMethods = Set.of(dynamicTupleFactoryMethod(), dynamicTupleZipMethod());
 
     private final DynamicTupleGenerator dynamicTupleGenerator;
     private final TupleGenerator tupleGenerator;
 
-    private boolean hasGenerated = false;
     private Trees trees;
 
 
@@ -66,50 +65,46 @@ public class TupleSpecProcessor extends AbstractProcessor {
 
 
     @Override
-    public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (!hasGenerated) {
-            var fields = new HashSet<Integer>();
-            var methodCallScanner = new TreePathScanner<Void, Void>() {
-                @Override
-                public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
-                    if (isTargetMethod(node)) {
-                        fields.add(node.getArguments().size());
-                    }
-                    return super.visitMethodInvocation(node, p);
+    public boolean processFirstRound(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
+        var fields = new HashSet<Integer>();
+        var methodCallScanner = new TreePathScanner<Void, Void>() {
+            @Override
+            public Void visitMethodInvocation(MethodInvocationTree node, Void p) {
+                if (isTargetMethod(node)) {
+                    fields.add(node.getArguments().size());
                 }
-
-                private boolean isTargetMethod(MethodInvocationTree node) {
-                    return targetMethods
-                            .contains(node.getMethodSelect().toString());
-                }
-            };
-
-            for (Element element : roundEnv.getRootElements()) {
-                if (element.getKind().isClass() || element.getKind().isInterface()) {
-                    methodCallScanner.scan(trees.getPath(element), null);
-                }
+                return super.visitMethodInvocation(node, p);
             }
 
-            fields.stream()
-                    .map(size -> new TupleGenerationParams(
-                            packageName,
-                            classPrefix + size,
-                            parameterPrefix,
-                            size
-                    )).map(this::generateTupleClass)
-                    .filter(Optional::isPresent)
-                    .map(Optional::get)
-                    .forEach(this::save);
+            private boolean isTargetMethod(MethodInvocationTree node) {
+                return targetMethods
+                        .contains(node.getMethodSelect().toString());
+            }
+        };
 
-            generateDynamicTupleClass(new DynamicTupleGenerationParam(
-                    packageName,
-                    dynamicTupleClassName,
-                    dynamicTupleFactoryMethodName,
-                    fields
-            )).ifPresent(this::save);
-
-            hasGenerated = true;
+        for (Element element : roundEnv.getRootElements()) {
+            if (element.getKind().isClass() || element.getKind().isInterface()) {
+                methodCallScanner.scan(trees.getPath(element), null);
+            }
         }
+
+        fields.stream()
+                .map(size -> new TupleGenerationParams(
+                        packageName,
+                        classPrefix + size,
+                        parameterPrefix,
+                        size
+                )).map(this::generateTupleClass)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(this::save);
+
+        generateDynamicTupleClass(new DynamicTupleGenerationParam(
+                packageName,
+                dynamicTupleClassName,
+                dynamicTupleFactoryMethodName,
+                fields
+        )).ifPresent(this::save);
         return false;
     }
 
