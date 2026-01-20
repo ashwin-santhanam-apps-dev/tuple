@@ -1,4 +1,4 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.javac;
 
 public record StaticMethodSpec(
         String packageName,

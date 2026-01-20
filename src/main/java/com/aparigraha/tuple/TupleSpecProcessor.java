@@ -3,12 +3,11 @@ package com.aparigraha.tuple;
 import com.aparigraha.tuple.dynamic.JavaFileWriter;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerator;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerationParam;
-import com.aparigraha.tuple.dynamic.factories.StaticTupleFactoryGenerator;
-import com.aparigraha.tuple.dynamic.factories.ZipperMethodGenerator;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerationParams;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerator;
 import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
-import com.aparigraha.tuple.dynamic.templates.PebbleTemplateProcessor;
+import com.aparigraha.tuple.javac.StaticMethodScanner;
+import com.aparigraha.tuple.javac.StaticMethodSpec;
 import com.sun.source.util.Trees;
 
 import javax.annotation.processing.*;
@@ -20,7 +19,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.aparigraha.tuple.TupleSpecProcessorDependencies.*;
+import static com.aparigraha.tuple.TupleSpecProcessorBootstrap.*;
 import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.*;
 import static javax.lang.model.element.ElementKind.*;
 
@@ -158,17 +157,4 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
             );
         }
     }
-}
-
-
-class TupleSpecProcessorDependencies {
-    private static final PebbleTemplateProcessor PEBBLE_TEMPLATE_PROCESSOR = new PebbleTemplateProcessor("templates");
-    public static final TupleGenerator TUPLE_GENERATOR = new TupleGenerator(PEBBLE_TEMPLATE_PROCESSOR);
-    public static final DynamicTupleGenerator DYNAMIC_TUPLE_GENERATOR = new DynamicTupleGenerator(
-            PEBBLE_TEMPLATE_PROCESSOR,
-            new StaticTupleFactoryGenerator(PEBBLE_TEMPLATE_PROCESSOR),
-            new ZipperMethodGenerator(PEBBLE_TEMPLATE_PROCESSOR)
-    );
-    public static final StaticMethodScanner STATIC_METHOD_SCANNER = new StaticMethodScanner();
-    public static final JavaFileWriter JAVA_FILE_WRITER = new JavaFileWriter();
 }
