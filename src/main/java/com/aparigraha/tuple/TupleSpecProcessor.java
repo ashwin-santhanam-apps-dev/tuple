@@ -74,7 +74,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
 
     private Set<Integer> extractTupleDefinitions(RoundEnvironment roundEnv) {
         return roundEnv.getRootElements().stream()
-                .filter(element -> element.getKind().isClass())
+                .filter(element -> element.getKind().isClass() || element.getKind().isInterface())
                 .map(element -> getTrees().getPath(element))
                 .map(treePath ->
                         methodScanner.scan(
