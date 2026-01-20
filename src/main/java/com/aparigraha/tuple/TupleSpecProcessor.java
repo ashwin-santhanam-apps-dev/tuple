@@ -20,9 +20,9 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static com.aparigraha.tuple.TupleSpecProcessorDependencies.*;
 import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.*;
 import static javax.lang.model.element.ElementKind.*;
 
@@ -33,7 +33,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
 
     private final DynamicTupleGenerator dynamicTupleGenerator;
     private final TupleGenerator tupleGenerator;
-    private final MethodScanner methodScanner;
+    private final StaticMethodScanner staticMethodScanner;
     private final JavaFileWriter javaFileWriter;
 
     private Trees trees;
@@ -41,22 +41,22 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     public TupleSpecProcessor(
             TupleGenerator tupleGenerator,
             DynamicTupleGenerator dynamicTupleGenerator,
-            MethodScanner methodScanner,
+            StaticMethodScanner staticMethodScanner,
             JavaFileWriter javaFileWriter
     ) {
         this.tupleGenerator = tupleGenerator;
         this.dynamicTupleGenerator = dynamicTupleGenerator;
-        this.methodScanner = methodScanner;
+        this.staticMethodScanner = staticMethodScanner;
         this.javaFileWriter = javaFileWriter;
     }
 
     // Required constructor for Service Discovery
     public TupleSpecProcessor() {
         this(
-                TupleSpecProcessorDependencies.tupleGenerator,
-                TupleSpecProcessorDependencies.dynamicTupleGenerator,
-                TupleSpecProcessorDependencies.methodScanner,
-                TupleSpecProcessorDependencies.javaFileWriter
+                TUPLE_GENERATOR,
+                DYNAMIC_TUPLE_GENERATOR,
+                STATIC_METHOD_SCANNER,
+                JAVA_FILE_WRITER
         );
     }
 
@@ -113,7 +113,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                 .map(element -> {
                     var treePath = trees.getPath(element);
                     var currentImports = imports.get(element.getQualifiedName().toString());
-                    return methodScanner.scan(
+                    return staticMethodScanner.scan(
                             node -> {
                                 String caller = node.getMethodSelect().toString();
                                 if (caller.startsWith(packageName + "." + dynamicTupleClassName)) {
@@ -208,15 +208,15 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
 
 
 class TupleSpecProcessorDependencies {
-    private static final PebbleTemplateProcessor pebbleTemplateProcessor = new PebbleTemplateProcessor("templates");
-    public static final TupleGenerator tupleGenerator = new TupleGenerator(pebbleTemplateProcessor);
-    public static final DynamicTupleGenerator dynamicTupleGenerator = new DynamicTupleGenerator(
-            pebbleTemplateProcessor,
-            new StaticTupleFactoryGenerator(pebbleTemplateProcessor),
-            new ZipperMethodGenerator(pebbleTemplateProcessor)
+    private static final PebbleTemplateProcessor PEBBLE_TEMPLATE_PROCESSOR = new PebbleTemplateProcessor("templates");
+    public static final TupleGenerator TUPLE_GENERATOR = new TupleGenerator(PEBBLE_TEMPLATE_PROCESSOR);
+    public static final DynamicTupleGenerator DYNAMIC_TUPLE_GENERATOR = new DynamicTupleGenerator(
+            PEBBLE_TEMPLATE_PROCESSOR,
+            new StaticTupleFactoryGenerator(PEBBLE_TEMPLATE_PROCESSOR),
+            new ZipperMethodGenerator(PEBBLE_TEMPLATE_PROCESSOR)
     );
-    public static final MethodScanner methodScanner = new MethodScanner();
-    public static final JavaFileWriter javaFileWriter = new JavaFileWriter();
+    public static final StaticMethodScanner STATIC_METHOD_SCANNER = new StaticMethodScanner();
+    public static final JavaFileWriter JAVA_FILE_WRITER = new JavaFileWriter();
 }
 
 record ImportStatement(

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.function.Predicate;
 
 
-public class MethodScanner {
+public class StaticMethodScanner {
     public List<MethodInvocationTree> scan(
             Predicate<MethodInvocationTree> isTargetMethod,
             TreePath treePath
