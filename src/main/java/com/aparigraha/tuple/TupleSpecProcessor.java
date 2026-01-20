@@ -45,22 +45,14 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
         this.javaFileWriter = javaFileWriter;
     }
 
-    public TupleSpecProcessor(PebbleTemplateProcessor pebbleTemplateProcessor) {
-        this(
-                new TupleGenerator(pebbleTemplateProcessor),
-                new DynamicTupleGenerator(
-                        pebbleTemplateProcessor,
-                        new StaticTupleFactoryGenerator(pebbleTemplateProcessor),
-                        new ZipperMethodGenerator(pebbleTemplateProcessor)
-                ),
-                new MethodScanner(),
-                new JavaFileWriter()
-        );
-    }
-
     // Required constructor for Service Discovery
     public TupleSpecProcessor() {
-        this(new PebbleTemplateProcessor("templates"));
+        this(
+                TupleSpecProcessorDependencies.tupleGenerator,
+                TupleSpecProcessorDependencies.dynamicTupleGenerator,
+                TupleSpecProcessorDependencies.methodScanner,
+                TupleSpecProcessorDependencies.javaFileWriter
+        );
     }
 
     @Override
@@ -151,4 +143,17 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
             );
         }
     }
+}
+
+
+class TupleSpecProcessorDependencies {
+    private static final PebbleTemplateProcessor pebbleTemplateProcessor = new PebbleTemplateProcessor("templates");
+    public static final TupleGenerator tupleGenerator = new TupleGenerator(pebbleTemplateProcessor);
+    public static final DynamicTupleGenerator dynamicTupleGenerator = new DynamicTupleGenerator(
+            pebbleTemplateProcessor,
+            new StaticTupleFactoryGenerator(pebbleTemplateProcessor),
+            new ZipperMethodGenerator(pebbleTemplateProcessor)
+    );
+    public static final MethodScanner methodScanner = new MethodScanner();
+    public static final JavaFileWriter javaFileWriter = new JavaFileWriter();
 }
