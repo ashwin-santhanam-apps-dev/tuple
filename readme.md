@@ -69,7 +69,7 @@ Boolean isHosteler = studentInfo.item1();
 ```
 
 ## Stream support - Zip Streams
-1. A static method `Stream<Object> DynamicTuple.of(Stream<Object>... streams)` is given by the library initially.
+1. A static method `Stream<Object> DynamicTuple.zip(Stream<Object>... streams)` is given by the library initially.
 ```java
 public class DynamicTuple {
     public static Stream<Object> zip(Stream<Object>... streams) {}
