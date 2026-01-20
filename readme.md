@@ -35,7 +35,7 @@ public class DynamicTuple {
 4. In the statement `var studentInfo = DynamicTuple.of("Alice", 28`, the type of `studentInfo` will be `Tuple2<String, Integer>` in the compile time.
 5. Hence, if `n` typed arguments are given to `DynamicTuple.of` method, this library will
    1. Create a tuple `Tuple(n)<T0, T1, ... T(n)>`
-   2. Create a corresponding factory method `Tuple(n)<T0, T1, ... T(n)> DynamicTuple.Of(T0 item0, T1 item1, ... T(n) item(n))`
+   2. Create a corresponding overloaded factory method `Tuple(n)<T0, T1, ... T(n)> DynamicTuple.Of(T0 item0, T1 item1, ... T(n) item(n))`
 6. These tuple classes and the static factory methods are additive. If one calls `DynamicTuple.Of` "n" times with "m" different arguments,
    1. "m" different tuple classes are created.
    2. "m" different static factory methods are created.
@@ -69,10 +69,16 @@ Boolean isHosteler = studentInfo.item1();
 ```
 
 ## Stream support - Zip Streams
-1. The tuple class generation is also triggered by calling `DynamicTuple.zip(Stream<?> streams)`.
-2. Similar to `DynamicTuple.of`, calling `DynamicTuple.zip` will also, 
+1. A static method `Stream<Object> DynamicTuple.of(Stream<Object>... streams)` is given by the library initially.
+```java
+public class DynamicTuple {
+    public static Stream<Object> zip(Stream<Object>... streams) {}
+}
+```
+2. The tuple class generation is also triggered by calling `DynamicTuple.zip(Stream<?>... streams)`.
+3. Similar to `DynamicTuple.of`, calling `DynamicTuple.zip` will also, 
    1. Create tuple classes based on the number of arguments.
-   2. Create a new static zip method with the given arguments.
+   2. Create a new static zip overloaded method with the given arguments.
 ### Example
 This is example of calling `DynamicTuple.zip` with `Stream<String>`, `Stream<Integer>`, `Stream<Boolean>`
 1. This zips the three individual streams into a single stream. The length of the stream will be the length of the smallest stream.
