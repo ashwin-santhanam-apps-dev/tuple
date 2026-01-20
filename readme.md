@@ -12,65 +12,80 @@ Since it's dynamic, if the usage of the Tuple is removed, the generated Tuple cl
 Tuples can be widely used in **Streams**, as it involves multiple transformations in different stages. And creating classes for each of those stage complicates the code.
 
 ## Basic Usage
-1. Add the annotation `@TupleSpec` on top of a class or a method.
-2. The value for the annotations is an array of integers, each corresponding to a tuple class's field count.
-3. Each item in the `@TupleSpec` annotation creates a Tuple record.
-4. **Compile the java project** to create the respective classes.
-5. These classes are created in the package `com.aparigraha.tuples`.
-### Example
-`@TupleSpec({2, 3})` creates two Tuple records, `Tuple2` and `Tuple3`.
+1. A static method `Object DynamicTuple.of(Object... args)` is given by the library initially.
 ```java
-@SpringBootApplication
-@TupleSpec({2, 3})
-public class FitnessTrackerApiApplication {}
+public class DynamicTuple {
+    public static Object of(Object... args) {}
+}
 ```
-The dynamically generated class for `Tuple2` will be similar to the one below.
+2. If a statement `var studentInfo = DynamicTuple.of("Alice", 28)` is added and compiled once, the following class is generated in the background.
 ```java
 public record Tuple2<T0, T1> (
    T0 item0,
    T1 item1
 ) {}
 ```
-Usage example of `Tuple2`
+3. An overload of the static method `DynamicTuple.of` is added.
 ```java
-var tuple2 = new Tuple2<>("Alice", 28);
-String name = tuple2.item0();
-Integer age = tuple2.item1();
-```
-   Hence, no type casting is required and all the elements are strongly typed.
-
-
-## Stream support - Zip Streams
-1. Each tuple class has a dynamically created static method `zip` that returns a Stream.
-2. This is used to zip 'n' Streams `Stream<T0>, Stream<T1>, ... Stream<Tn>` into `Stream<Tuple(n)<T0, T1, ... Tn>>`.
-3. This is non-terminal operation, hence the data will not be collected.
-4. For the 'Tuple3' class, the 'zip' method takes 3 streams as input.
-The dynamically generated class for `Tuple3` will be similar to the one below.
-```java
-public record Tuple3<T0, T1, T2>(
-    T0 item0,
-    T1 item1,
-    T2 item2
-) {
-    public static <T0, T1, T2> Stream<Tuple3<T0, T1, T2>> zip(Stream<T0> stream0, Stream<T1> stream1, Stream<T2> stream2) {
-        // Code that zips tuples without collecting            
-    }
+public class DynamicTuple {
+    public static Object of(Object... args) {}
+    public static <T0, T1> Tuple2<T0, T1> of(T0 item0, T1 item1) {}
 }
 ```
+4. In the statement `var studentInfo = DynamicTuple.of("Alice", 28`, the type of `studentInfo` will be `Tuple2<String, Integer>` in the compile time.
+5. Hence, if `n` typed arguments are given to `DynamicTuple.of` method, this library will
+   1. Create a tuple `Tuple(n)<T0, T1, ... T(n)>`
+   2. Create a corresponding factory method `Tuple(n)<T0, T1, ... T(n)> DynamicTuple.Of(T0 item0, T1 item1, ... T(n) item(n))`
+6. These tuple classes and the static factory methods are additive. If one calls `DynamicTuple.Of` "n" times with "m" different arguments,
+   1. "m" different tuple classes are created.
+   2. "m" different static factory methods are created.
+7. **Important Note**
+   Refrain from creating objects with `new Tuple3("Alice", 28, "Wonderland")`, as this won't trigger tuple class creation. This piece of code will break if there are no occurrences of `DynamicTuple.of(T0 item0, T1 item1, T2 item2)`.
+
 ### Example
-Let's assume a case where there are three streams, each representing a field for employees.
-1. Id - Integer Stream
-2. Name - String Stream
-3. FullTimeEmployment - Boolean Stream
+Let's say I want a tuple to store a Student's name (String), age (Integer) and if they belong to hostel (Boolean).
+1. Call `DynamicTuple.of` with necessary arguments.
 ```java
-Stream<Integer> idStream = Stream.of(1, 2, 3);
+var studentInfo = DynamicTuple.of("Alice", 12, false);
+```
+2. The type of the `studentInfo` reference would be `Tuple3<String, Integer, Boolean>`, as this class will be generated.
+```java
+public record Tuple3<T0, T1, T2> (
+   T0 item0,
+   T1 item1,
+   T2 item2
+) {}
+public class DynamicTuple {
+    public static Object of(Object... args) {}
+    public static <T0, T1, T2> Tuple3<T0, T1, T2> of(T0 item0, T1 item1, T2 item2) {}
+}
+```
+3. Their properties can be accessed via
+```java
+var studentInfo = DynamicTuple.of("Alice", 12, false);
+String name = studentInfo.item0();
+Integer age = studentInfo.item1();
+Boolean isHosteler = studentInfo.item1();
+```
+
+## Stream support - Zip Streams
+1. The tuple class generation is also triggered by calling `DynamicTuple.zip(Stream<?> streams)`.
+2. Similar to `DynamicTuple.of`, calling `DynamicTuple.zip` will also, 
+   1. Create tuple classes based on the number of arguments.
+   2. Create a new static zip method with the given arguments.
+### Example
+This is example of calling `DynamicTuple.zip` with `Stream<String>`, `Stream<Integer>`, `Stream<Boolean>`
+1. This zips the three individual streams into a single stream. The length of the stream will be the length of the smallest stream.
+```java
 Stream<String> nameStream = Stream.of("Alice", "Bob", "Carla");
-Stream<Boolean> fullTimeEmploymentStream = Stream.of(true, false, true);
+Stream<Integer> ageStream = Stream.of(12, 13, 14);
+Stream<Boolean> isHostelerStream = Stream.of(false, true, false);
+
+var studentInfoStream = DynamicTuple.zip(nameStream, ageStream, isHostelerStream);
 ```
-To use the zip, simply pass the individual streams to the respective `zip` method of the tuple class.
+2. The return type of the above `DynamicTuple.zip` would be `Stream<Tuple3<String, Integer, Boolean>>`.
+3. This will create the same `Tuple3<T0, T1, T2>` class `<T0, T1, T2> Tuple3<T0, T1, T2> of(T0 item0, T1 item1, T2 item2)` static factory, and also this static zip method. 
 ```java
-Stream<Tuple3<Integer, String, Boolean>> employeeStream = Tuple3.zip(idStream, nameStream, fullTimeEmploymentStream);
-Stream<Integer> fullTimeEmployeeIds = employeeStream.filter(Tuple3::item2).map(x -> x.item0());
+public static <T0, T1, T2> Stream<Tuple3<T0, T1, T2>> zip(Stream<T0> stream0, Stream<T1> stream1, Stream<T2> stream2) {}
 ```
-This zips the three individual streams into a single stream. The length of the stream will be the length of the smallest stream.
-The `zip` method does not collect values internally. It's a intermediate operation. 
+4. The `zip` method does not collect values internally. It's a intermediate operation. 
