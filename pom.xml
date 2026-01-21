@@ -33,6 +33,13 @@
             <artifactId>mockito-junit-jupiter</artifactId>
             <version>5.21.0</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.google.testing.compile</groupId>
+            <artifactId>compile-testing</artifactId>
+            <version>0.23.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -43,6 +50,25 @@
                 <version>3.13.0</version>
                 <configuration>
                     <proc>none</proc>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.2.5</version>
+                <configuration>
+                    <argLine>
+                        --add-opens jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.main=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.util=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.tree=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.processing=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.comp=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.file=ALL-UNNAMED
+                        --add-opens jdk.compiler/com.sun.tools.javac.parser=ALL-UNNAMED
+                    </argLine>
                 </configuration>
             </plugin>
         </plugins>
