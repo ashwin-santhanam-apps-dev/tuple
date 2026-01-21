@@ -1,7 +1,7 @@
 package com.aparigraha.tuple.javac;
 
 
-public record TupleDefinition(
+public record NumberedTupleDefinition(
         String className,
         String methodName,
         int argumentCount

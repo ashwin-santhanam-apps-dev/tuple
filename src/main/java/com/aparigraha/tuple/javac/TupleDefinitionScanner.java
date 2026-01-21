@@ -43,7 +43,7 @@ public class TupleDefinitionScanner {
                                 if (tupleDefinitionSpec == NAMED_TUPLE_FACTORY_METHOD_SPEC) {
                                     result.add(processArguments(node, tupleDefinitionSpec));
                                 } else {
-                                    result.add(new TupleDefinition(
+                                    result.add(new NumberedTupleDefinition(
                                             tupleDefinitionSpec.className(),
                                             tupleDefinitionSpec.methodName(),
                                             node.getArguments().size()

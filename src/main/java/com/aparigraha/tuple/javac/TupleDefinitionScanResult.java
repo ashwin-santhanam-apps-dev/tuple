@@ -5,7 +5,7 @@ import java.util.Set;
 
 
 public record TupleDefinitionScanResult (
-        Set<TupleDefinition> tupleDefinitions,
+        Set<NumberedTupleDefinition> numberedTupleDefinitions,
         Set<NamedTupleDefinition> namedTupleDefinitions
 ) {
     public TupleDefinitionScanResult() {
@@ -13,13 +13,13 @@ public record TupleDefinitionScanResult (
     }
 
     public TupleDefinitionScanResult add(TupleDefinitionScanResult scanResult) {
-        tupleDefinitions.addAll(scanResult.tupleDefinitions);
+        numberedTupleDefinitions.addAll(scanResult.numberedTupleDefinitions);
         namedTupleDefinitions.addAll(scanResult.namedTupleDefinitions);
         return this;
     }
 
-    public TupleDefinitionScanResult add(TupleDefinition tupleDefinition) {
-        tupleDefinitions.add(tupleDefinition);
+    public TupleDefinitionScanResult add(NumberedTupleDefinition numberedTupleDefinition) {
+        numberedTupleDefinitions.add(numberedTupleDefinition);
         return this;
     }
 

@@ -6,7 +6,7 @@ import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerationParam;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerationParams;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerator;
 import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
-import com.aparigraha.tuple.javac.TupleDefinition;
+import com.aparigraha.tuple.javac.NumberedTupleDefinition;
 import com.aparigraha.tuple.javac.TupleDefinitionScanResult;
 import com.aparigraha.tuple.javac.TupleDefinitionScanner;
 import com.aparigraha.tuple.javac.TupleDefinitionSpec;
@@ -102,9 +102,9 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                         element
                 )
                 )
-                .map(TupleDefinitionScanResult::tupleDefinitions)
+                .map(TupleDefinitionScanResult::numberedTupleDefinitions)
                 .flatMap(Collection::stream)
-                .map(TupleDefinition::argumentCount)
+                .map(NumberedTupleDefinition::argumentCount)
                 .collect(Collectors.toSet());
     }
 
