@@ -1,7 +1,7 @@
-package com.aparigraha.tuple.javac;
+package com.aparigraha.tuple.domain;
 
 
-public record NumberedTupleDefinition(
+public record NumberedTupleSpec(
         String className,
         String methodName,
         int argumentCount

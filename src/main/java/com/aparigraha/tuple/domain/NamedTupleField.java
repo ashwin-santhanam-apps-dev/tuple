@@ -1,4 +1,4 @@
-package com.aparigraha.tuple.javac;
+package com.aparigraha.tuple.domain;
 
 public record NamedTupleField(
         int index,
