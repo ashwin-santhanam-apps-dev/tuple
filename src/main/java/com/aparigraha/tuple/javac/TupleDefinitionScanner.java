@@ -1,9 +1,5 @@
 package com.aparigraha.tuple.javac;
 
-import com.aparigraha.tuple.domain.NamedTupleField;
-import com.aparigraha.tuple.domain.NamedTupleSpec;
-import com.aparigraha.tuple.domain.NumberedTupleSpec;
-import com.aparigraha.tuple.domain.TupleSpecs;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LambdaExpressionTree;
@@ -24,7 +20,7 @@ import static com.aparigraha.tuple.SupportedTupleDefinitions.NAMED_TUPLE_FACTORY
 
 
 public class TupleDefinitionScanner {
-    public TupleSpecs scan(
+    public TupleDefinitionScanResult scan(
             Set<TupleDefinitionSpec> tupleDefinitionSpecs,
             Trees trees,
             Elements elementUtils,
@@ -36,9 +32,9 @@ public class TupleDefinitionScanner {
                 .getQualifiedName()
                 .toString();
 
-        var treePathScanner = new TreePathScanner<TupleSpecs, Void>() {
+        var treePathScanner = new TreePathScanner<TupleDefinitionScanResult, Void>() {
             @Override
-            public TupleSpecs visitMethodInvocation(MethodInvocationTree node, Void p) {
+            public TupleDefinitionScanResult visitMethodInvocation(MethodInvocationTree node, Void p) {
                 var result = super.visitMethodInvocation(node, p);
                 tupleDefinitionSpecs.stream()
                         .filter(expectedSpec -> isTargetMethod(expectedSpec, node))
@@ -47,7 +43,7 @@ public class TupleDefinitionScanner {
                                 if (tupleDefinitionSpec == NAMED_TUPLE_FACTORY_METHOD_SPEC) {
                                     result.add(processArguments(node, tupleDefinitionSpec));
                                 } else {
-                                    result.add(new NumberedTupleSpec(
+                                    result.add(new NumberedTupleDefinition(
                                             tupleDefinitionSpec.className(),
                                             tupleDefinitionSpec.methodName(),
                                             node.getArguments().size()
@@ -59,12 +55,12 @@ public class TupleDefinitionScanner {
             }
 
             @Override
-            public TupleSpecs reduce(TupleSpecs r1, TupleSpecs r2) {
+            public TupleDefinitionScanResult reduce(TupleDefinitionScanResult r1, TupleDefinitionScanResult r2) {
                 return getOrCreate(r1).add(getOrCreate(r2));
             }
 
-            private static TupleSpecs getOrCreate(TupleSpecs scanResult) {
-                return scanResult == null ? new TupleSpecs() : scanResult;
+            private static TupleDefinitionScanResult getOrCreate(TupleDefinitionScanResult scanResult) {
+                return scanResult == null ? new TupleDefinitionScanResult() : scanResult;
             }
 
             private boolean isTargetMethod(TupleDefinitionSpec expectedSpec, MethodInvocationTree node) {
@@ -122,7 +118,7 @@ public class TupleDefinitionScanner {
                 }
             }
 
-            private NamedTupleSpec processArguments(MethodInvocationTree node, TupleDefinitionSpec spec) {
+            private NamedTupleDefinition processArguments(MethodInvocationTree node, TupleDefinitionSpec spec) {
                 // TODO: Throw exception when remaining args are not FieldSpec<T>
                 record IndexedValue<T>(int index, T value) {}
                 var arguments = node.getArguments();
@@ -143,7 +139,7 @@ public class TupleDefinitionScanner {
                                 )
                         )
                         .collect(Collectors.toSet());
-                return new NamedTupleSpec(
+                return new NamedTupleDefinition(
                         packageName,
                         className(arguments.get(0)),
                         spec.methodName(),

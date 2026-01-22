@@ -1,14 +1,15 @@
 package com.aparigraha.tuple;
 
-import com.aparigraha.tuple.domain.TupleSpecs;
-import com.aparigraha.tuple.domain.NumberedTupleSpec;
 import com.aparigraha.tuple.dynamic.JavaFileWriter;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerator;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerationParam;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerationParams;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerator;
 import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
-import com.aparigraha.tuple.javac.*;
+import com.aparigraha.tuple.javac.NumberedTupleDefinition;
+import com.aparigraha.tuple.javac.TupleDefinitionScanResult;
+import com.aparigraha.tuple.javac.TupleDefinitionScanner;
+import com.aparigraha.tuple.javac.TupleDefinitionSpec;
 import com.sun.source.util.Trees;
 
 import javax.annotation.processing.*;
@@ -74,11 +75,11 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     public boolean processFirstRound(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         var rootElements = extractValidRootElements(roundEnv);
 
-        var tupleSpecs = extractTupleDefinitions(rootElements);
+        var tupleDefinitions = extractTupleDefinitions(rootElements);
 
-        createTupleClasses(tupleSpecs);
+        createTupleClasses(tupleDefinitions);
 
-        createFactoryClass(tupleSpecs);
+        createFactoryClass(tupleDefinitions);
 
         return false;
     }
@@ -92,42 +93,42 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     }
 
 
-    private TupleSpecs extractTupleDefinitions(List<TypeElement> elements) {
+    private Set<Integer> extractTupleDefinitions(List<TypeElement> elements) {
         return elements.stream()
                 .map(element -> tupleDefinitionScanner.scan(
                         tupleDefinitionSpecs,
                         trees,
                         processingEnv.getElementUtils(),
                         element
-                )).reduce(
-                        new TupleSpecs(),
-                        TupleSpecs::add
-                );
+                )
+                )
+                .map(TupleDefinitionScanResult::numberedTupleDefinitions)
+                .flatMap(Collection::stream)
+                .map(NumberedTupleDefinition::argumentCount)
+                .collect(Collectors.toSet());
     }
 
-    private void createTupleClasses(TupleSpecs tupleSpecs) {
-        tupleSpecs.numberedTupleSpecs().stream()
-                .map(spec -> new TupleGenerationParams(
+    private void createTupleClasses(Set<Integer> tupleDefinitions) {
+        tupleDefinitions.stream()
+                .map(size -> new TupleGenerationParams(
                         packageName,
-                        className(spec.argumentCount()),
+                        classPrefix + size,
                         parameterPrefix,
-                        spec.argumentCount()
+                        size
                 )).map(this::generateTupleClass)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(this::save);
     }
 
-    private void createFactoryClass(TupleSpecs tupleSpecs) {
+    private void createFactoryClass(Set<Integer> tupleDefinitions) {
         generateDynamicTupleClass(new DynamicTupleGenerationParam(
                 packageName,
                 dynamicTupleClassName,
                 dynamicTupleFactoryMethodName,
                 dynamicTupleZipMethodName,
                 namedTupleFactoryMethodName,
-                tupleSpecs.numberedTupleSpecs().stream()
-                        .map(NumberedTupleSpec::argumentCount)
-                        .collect(Collectors.toSet())
+                tupleDefinitions
         )).ifPresent(this::save);
     }
 

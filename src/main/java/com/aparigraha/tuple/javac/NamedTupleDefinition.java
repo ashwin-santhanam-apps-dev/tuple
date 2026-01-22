@@ -1,8 +1,8 @@
-package com.aparigraha.tuple.domain;
+package com.aparigraha.tuple.javac;
 
 import java.util.Set;
 
-public record NamedTupleSpec(
+public record NamedTupleDefinition(
         String packageName,
         String className,
         String methodName,

@@ -89,8 +89,4 @@ public class JavaTemplate {
     public static String className(int size) {
         return classPrefix + size;
     }
-
-    public static String fieldName(int index) {
-        return parameterPrefix + index;
-    }
 }
