@@ -1,11 +1,9 @@
 package com.aparigraha.tuple;
 
 import com.aparigraha.tuple.dynamic.JavaFileWriter;
-import com.aparigraha.tuple.dynamic.entities.NamedTupleGenerator;
+import com.aparigraha.tuple.dynamic.entities.*;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerator;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerationParam;
-import com.aparigraha.tuple.dynamic.entities.TupleGenerationParams;
-import com.aparigraha.tuple.dynamic.entities.TupleGenerator;
 import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
 import com.aparigraha.tuple.javac.NumberedTupleDefinition;
 import com.aparigraha.tuple.javac.TupleDefinitionScanResult;
@@ -111,14 +109,33 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     }
 
 
-    private void createTupleClasses(TupleDefinitionScanResult TupleDefinitionScanResult) {
-        TupleDefinitionScanResult.numberedTupleDefinitions().stream()
+    private void createTupleClasses(TupleDefinitionScanResult scanResult) {
+        scanResult.numberedTupleDefinitions().stream()
                 .map(definition -> new TupleGenerationParams(
                         packageName,
                         className(definition.argumentCount()),
                         parameterPrefix,
                         definition.argumentCount()
                 )).map(this::generateTupleClass)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .forEach(this::save);
+
+        scanResult.namedTupleDefinitions().stream()
+                .map(definition ->
+                        new NamedTupleGenerationParams(
+                                definition.packageName(),
+                                definition.className(),
+                                definition.fields().stream().map( fieldDefinition ->
+                                        new NamedTupleGenerationFieldParams(
+                                                fieldDefinition.index(),
+                                                fieldDefinition.type(),
+                                                fieldDefinition.name()
+                                        )
+                                ).collect(Collectors.toSet())
+                        )
+                )
+                .map(this::generateNamedTupleClass)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .forEach(this::save);
@@ -140,6 +157,18 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     private Optional<GeneratedClassSchema> generateTupleClass(TupleGenerationParams params) {
         try {
             return Optional.of(tupleGenerator.generate(params));
+        } catch (IOException e) {
+            processingEnv.getMessager().printMessage(
+                    Diagnostic.Kind.ERROR,
+                    "Error creating Tuple class: " + params.className() + "\n" + e.getMessage()
+            );
+            return Optional.empty();
+        }
+    }
+
+    private Optional<GeneratedClassSchema> generateNamedTupleClass(NamedTupleGenerationParams params) {
+        try {
+            return Optional.of(namedTupleGenerator.generate(params));
         } catch (IOException e) {
             processingEnv.getMessager().printMessage(
                     Diagnostic.Kind.ERROR,
