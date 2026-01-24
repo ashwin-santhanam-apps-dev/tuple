@@ -18,6 +18,13 @@ public class JavaTemplate {
     public static final String namedTupleFactoryMethodName = "named";
     public static final String packageName = "com.aparigraha.tuple.dynamic";
 
+    public static String namedTupleFactoryMethodParam(String type, String name) {
+        return "FieldSpec<%s> %s".formatted(type, name);
+    }
+
+    public static String namedTupleConstructorParam(String fieldName) {
+        return "%s.value(null)".formatted(fieldName);
+    }
 
     public static String dynamicTupleFactoryMethod() {
         return dynamicTupleClassName + "." + dynamicTupleFactoryMethodName;

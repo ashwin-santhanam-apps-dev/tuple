@@ -1,0 +1,3 @@
+public static <{{ genericsSequence }}> {{ className }}<{{ genericsSequence }}> {{ methodName }}(Class<{{ className }}> tClass, {{ fieldSpecParameters }}) {
+    return new {{ className }}<>({{ fieldSpecValues }});
+}
