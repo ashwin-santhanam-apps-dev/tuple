@@ -1,4 +1,4 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.processors;
 
 import com.aparigraha.tuple.dynamic.JavaFileWriter;
 import com.aparigraha.tuple.dynamic.entities.TupleGenerator;

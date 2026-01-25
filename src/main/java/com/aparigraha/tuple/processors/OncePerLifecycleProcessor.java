@@ -1,4 +1,4 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.processors;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.RoundEnvironment;

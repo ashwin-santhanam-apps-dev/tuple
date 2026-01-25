@@ -9,14 +9,12 @@ import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.type.DeclaredType;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import static com.aparigraha.tuple.SupportedTupleDefinitions.NAMED_TUPLE_FACTORY_METHOD_SPEC;
+import static com.aparigraha.tuple.processors.SupportedTupleDefinitions.NAMED_TUPLE_FACTORY_METHOD_SPEC;
 
 
 public class TupleDefinitionScanner {

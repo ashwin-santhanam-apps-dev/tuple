@@ -1,4 +1,4 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.processors;
 
 import com.aparigraha.tuple.dynamic.JavaFileWriter;
 import com.aparigraha.tuple.dynamic.entities.*;
@@ -17,8 +17,8 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.aparigraha.tuple.SupportedTupleDefinitions.*;
-import static com.aparigraha.tuple.TupleSpecProcessorBootstrap.*;
+import static com.aparigraha.tuple.processors.SupportedTupleDefinitions.*;
+import static com.aparigraha.tuple.processors.TupleSpecProcessorBootstrap.*;
 import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.*;
 import static javax.lang.model.element.ElementKind.*;
 

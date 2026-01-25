@@ -1,6 +1,5 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.processors;
 
-import com.aparigraha.tuple.dynamic.DynamicTupleSeed;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.JavaFileObjects;
 import org.junit.jupiter.api.Test;

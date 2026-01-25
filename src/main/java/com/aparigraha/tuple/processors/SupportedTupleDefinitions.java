@@ -1,4 +1,4 @@
-package com.aparigraha.tuple;
+package com.aparigraha.tuple.processors;
 
 import com.aparigraha.tuple.javac.TupleDefinitionSpec;
 
