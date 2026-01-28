@@ -12,4 +12,14 @@ public class InconsistentArgumentException extends Exception {
     public Set<String> qualifiedClassNames() {
         return qualifiedClassNames;
     }
+
+    @Override
+    public String getMessage() {
+        return "Inconsistent arguments for named tuples: %s".formatted(qualifiedClassNames);
+    }
+
+    @Override
+    public String toString() {
+        return getMessage();
+    }
 }

@@ -6,6 +6,7 @@ import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerator;
 import com.aparigraha.tuple.dynamic.factories.DynamicTupleGenerationParam;
 import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
 import com.aparigraha.tuple.javac.*;
+import com.aparigraha.tuple.validators.Validator;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TaskEvent;
 import com.sun.source.util.TaskListener;
@@ -40,6 +41,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     private final TupleGenerator tupleGenerator;
     private final TupleDefinitionScanner tupleDefinitionScanner;
     private final JavaFileWriter javaFileWriter;
+    private final List<Validator> validators;
 
     private Trees trees;
 
@@ -47,12 +49,14 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
             TupleGenerator tupleGenerator,
             DynamicTupleGenerator dynamicTupleGenerator,
             TupleDefinitionScanner tupleDefinitionScanner,
-            JavaFileWriter javaFileWriter
+            JavaFileWriter javaFileWriter,
+            List<Validator> validators
     ) {
         this.tupleGenerator = tupleGenerator;
         this.dynamicTupleGenerator = dynamicTupleGenerator;
         this.tupleDefinitionScanner = tupleDefinitionScanner;
         this.javaFileWriter = javaFileWriter;
+        this.validators = validators;
     }
 
     // Required constructor for Service Discovery
@@ -61,7 +65,8 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                 TUPLE_GENERATOR,
                 DYNAMIC_TUPLE_GENERATOR,
                 TUPLE_DEFINITION_SCANNER,
-                JAVA_FILE_WRITER
+                JAVA_FILE_WRITER,
+                VALIDATORS
         );
     }
 
@@ -195,7 +200,6 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
             @Override
             public void started(TaskEvent e) {
                 if (e.getKind() == TaskEvent.Kind.ANALYZE) {
-                    System.out.println("Analyzing file: " + e.getSourceFile().getName());
                     scanResults.add(tupleDefinitionScanner.scan(
                             tupleDefinitionSpecs,
                             trees,
@@ -209,19 +213,18 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
             @Override
             public void finished(TaskEvent e) {
                 if (e.getKind() == TaskEvent.Kind.COMPILATION) {
-                    var namedTupleUsageSummary = scanResults.stream()
-                            .map(TupleDefinitionScanResult::namedTupleDefinitions)
-                            .filter(namedTupleDefinitions -> !namedTupleDefinitions.isEmpty())
-                            .flatMap(Collection::stream)
-                            .collect(Collectors.toMap(
-                                    NamedTupleDefinition::qualifiedName,
-                                    namedTupleDefinition -> List.of(namedTupleDefinition.fields()),
-                                    (list1, list2) -> {
-                                        list1.addAll(list2);
-                                        return list1;
-                                    }
-                            ));
-                    System.out.println("compilation: " + namedTupleUsageSummary);
+                    var mergedResults = scanResults.stream()
+                            .reduce(
+                                    new TupleDefinitionScanResult(),
+                                    TupleDefinitionScanResult::add
+                            );
+                    for (Validator validator: validators) {
+                        try {
+                            validator.validate(mergedResults);
+                        } catch (Exception ex) {
+                            processingEnv.getMessager().printError(ex.getMessage());
+                        }
+                    }
                 }
             }
         });

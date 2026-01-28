@@ -8,6 +8,10 @@ import com.aparigraha.tuple.dynamic.factories.StaticTupleFactoryGenerator;
 import com.aparigraha.tuple.dynamic.factories.ZipperMethodGenerator;
 import com.aparigraha.tuple.dynamic.templates.PebbleTemplateProcessor;
 import com.aparigraha.tuple.javac.TupleDefinitionScanner;
+import com.aparigraha.tuple.validators.NamedTupleArgumentOrderValidator;
+import com.aparigraha.tuple.validators.Validator;
+
+import java.util.List;
 
 class TupleSpecProcessorBootstrap {
     private static final PebbleTemplateProcessor PEBBLE_TEMPLATE_PROCESSOR = new PebbleTemplateProcessor("templates");
@@ -20,4 +24,5 @@ class TupleSpecProcessorBootstrap {
     );
     public static final TupleDefinitionScanner TUPLE_DEFINITION_SCANNER = new TupleDefinitionScanner(false);
     public static final JavaFileWriter JAVA_FILE_WRITER = new JavaFileWriter();
+    public static final List<Validator> VALIDATORS = List.of(new NamedTupleArgumentOrderValidator());
 }
