@@ -152,10 +152,10 @@ public class TupleDefinitionScanner {
                         importTree.isStatic()
                 )).collect(Collectors.toSet());
     }
-}
 
-record ImportStatement(
-        String identifier,
-        boolean isStatic
-) {}
+    private record ImportStatement(
+            String identifier,
+            boolean isStatic
+    ) {}
+}
 
