@@ -1,6 +1,6 @@
 package com.aparigraha.tuple.processors;
 
-import com.aparigraha.tuple.javac.TupleDefinitionSpec;
+import com.aparigraha.tuple.javac.scan.result.TupleDefinitionSpec;
 
 import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.*;
 

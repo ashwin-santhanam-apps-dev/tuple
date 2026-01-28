@@ -1,5 +1,6 @@
-package com.aparigraha.tuple.javac;
+package com.aparigraha.tuple.javac.scan;
 
+import com.aparigraha.tuple.javac.scan.result.*;
 import com.sun.source.tree.CompilationUnitTree;
 import com.sun.source.tree.ExpressionTree;
 import com.sun.source.tree.LambdaExpressionTree;

@@ -2,12 +2,11 @@ package com.aparigraha.tuple.dynamic.factories;
 
 import com.aparigraha.tuple.dynamic.templates.JavaTemplate;
 import com.aparigraha.tuple.dynamic.templates.PebbleTemplateProcessor;
-import com.aparigraha.tuple.javac.NamedTupleDefinition;
-import com.aparigraha.tuple.javac.NamedTupleField;
+import com.aparigraha.tuple.javac.scan.result.NamedTupleDefinition;
+import com.aparigraha.tuple.javac.scan.result.NamedTupleField;
 
 import java.io.IOException;
 import java.util.Comparator;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.IntStream;
 

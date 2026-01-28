@@ -1,6 +1,6 @@
 package com.aparigraha.tuple.validators;
 
-import com.aparigraha.tuple.javac.TupleDefinitionScanResult;
+import com.aparigraha.tuple.javac.scan.result.TupleDefinitionScanResult;
 
 
 public interface Validator {

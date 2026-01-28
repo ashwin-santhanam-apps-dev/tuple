@@ -1,4 +1,4 @@
-package com.aparigraha.tuple.javac;
+package com.aparigraha.tuple.javac.scan.result;
 
 public record TupleDefinitionSpec(
         String packageName,

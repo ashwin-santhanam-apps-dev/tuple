@@ -1,6 +1,6 @@
 package com.aparigraha.tuple.dynamic.factories;
 
-import com.aparigraha.tuple.javac.NamedTupleDefinition;
+import com.aparigraha.tuple.javac.scan.result.NamedTupleDefinition;
 
 import java.util.Set;
 

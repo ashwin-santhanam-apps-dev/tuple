@@ -7,7 +7,7 @@ import com.aparigraha.tuple.dynamic.factories.StaticNamedTupleFactoryGenerator;
 import com.aparigraha.tuple.dynamic.factories.StaticTupleFactoryGenerator;
 import com.aparigraha.tuple.dynamic.factories.ZipperMethodGenerator;
 import com.aparigraha.tuple.dynamic.templates.PebbleTemplateProcessor;
-import com.aparigraha.tuple.javac.TupleDefinitionScanner;
+import com.aparigraha.tuple.javac.scan.TupleDefinitionScanner;
 import com.aparigraha.tuple.validators.NamedTupleArgumentOrderValidator;
 import com.aparigraha.tuple.validators.Validator;
 

@@ -1,9 +1,9 @@
 package com.aparigraha.tuple.validators;
 
 
-import com.aparigraha.tuple.javac.NamedTupleDefinition;
-import com.aparigraha.tuple.javac.NamedTupleField;
-import com.aparigraha.tuple.javac.TupleDefinitionScanResult;
+import com.aparigraha.tuple.javac.scan.result.NamedTupleDefinition;
+import com.aparigraha.tuple.javac.scan.result.NamedTupleField;
+import com.aparigraha.tuple.javac.scan.result.TupleDefinitionScanResult;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;

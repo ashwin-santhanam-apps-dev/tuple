@@ -2,7 +2,7 @@ package com.aparigraha.tuple.dynamic.factories;
 
 import com.aparigraha.tuple.dynamic.GeneratedClassSchema;
 import com.aparigraha.tuple.dynamic.templates.PebbleTemplateProcessor;
-import com.aparigraha.tuple.javac.NamedTupleDefinition;
+import com.aparigraha.tuple.javac.scan.result.NamedTupleDefinition;
 
 import java.io.IOException;
 import java.util.ArrayList;

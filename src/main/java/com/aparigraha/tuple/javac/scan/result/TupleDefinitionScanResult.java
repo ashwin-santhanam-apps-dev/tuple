@@ -1,4 +1,4 @@
-package com.aparigraha.tuple.javac;
+package com.aparigraha.tuple.javac.scan.result;
 
 import java.util.HashSet;
 import java.util.Set;

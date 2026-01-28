@@ -1,9 +1,8 @@
 package com.aparigraha.tuple.validators;
 
-import com.aparigraha.tuple.javac.NamedTupleDefinition;
-import com.aparigraha.tuple.javac.TupleDefinitionScanResult;
+import com.aparigraha.tuple.javac.scan.result.NamedTupleDefinition;
+import com.aparigraha.tuple.javac.scan.result.TupleDefinitionScanResult;
 
-import java.util.*;
 import java.util.stream.Collectors;
 
 
