@@ -18,6 +18,7 @@ import javax.lang.model.element.TypeElement;
 import javax.tools.Diagnostic;
 import java.io.IOException;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static com.aparigraha.tuple.processors.SupportedTupleDefinitions.*;
@@ -80,28 +81,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
 
         createFactoryClass(tupleDefinitions);
 
-        JavacTask task = JavacTask.instance(processingEnv);
-        task.addTaskListener(new TaskListener() {
-            @Override
-            public void started(TaskEvent e) {
-                if (e.getKind() == TaskEvent.Kind.ANALYZE) {
-                    System.out.println("Analyzing file: " + e.getSourceFile().getName());
-                    var result = tupleDefinitionScanner.scan(
-                            tupleDefinitionSpecs,
-                            trees,
-                            processingEnv.getElementUtils(),
-                            e.getTypeElement(),
-                            true
-                    );
-                    System.out.println(result);
-                }
-            }
-
-            @Override
-            public void finished(TaskEvent e) {
-                // No-op for this example
-            }
-        });
+        validateTupleSpec();
 
         return false;
     }
@@ -205,5 +185,45 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                     "Error creating DynamicTuple class"
             );
         }
+    }
+
+
+    private void validateTupleSpec() {
+        JavacTask.instance(processingEnv).addTaskListener(new TaskListener() {
+            private final ArrayList<TupleDefinitionScanResult> scanResults = new ArrayList<>();
+
+            @Override
+            public void started(TaskEvent e) {
+                if (e.getKind() == TaskEvent.Kind.ANALYZE) {
+                    System.out.println("Analyzing file: " + e.getSourceFile().getName());
+                    scanResults.add(tupleDefinitionScanner.scan(
+                            tupleDefinitionSpecs,
+                            trees,
+                            processingEnv.getElementUtils(),
+                            e.getTypeElement(),
+                            true
+                    ));
+                }
+            }
+
+            @Override
+            public void finished(TaskEvent e) {
+                if (e.getKind() == TaskEvent.Kind.COMPILATION) {
+                    var namedTupleUsageSummary = scanResults.stream()
+                            .map(TupleDefinitionScanResult::namedTupleDefinitions)
+                            .filter(namedTupleDefinitions -> !namedTupleDefinitions.isEmpty())
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toMap(
+                                    NamedTupleDefinition::qualifiedName,
+                                    namedTupleDefinition -> List.of(namedTupleDefinition.fields()),
+                                    (list1, list2) -> {
+                                        list1.addAll(list2);
+                                        return list1;
+                                    }
+                            ));
+                    System.out.println("compilation: " + namedTupleUsageSummary);
+                }
+            }
+        });
     }
 }
