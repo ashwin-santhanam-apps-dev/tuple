@@ -9,7 +9,6 @@ import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 
 import javax.lang.model.element.Element;
-import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -19,12 +18,6 @@ import static com.aparigraha.tuple.processors.SupportedTupleDefinitions.NAMED_TU
 
 
 public class TupleDefinitionScanner {
-    private final boolean fetchTypes;
-
-    public TupleDefinitionScanner(boolean fetchTypes) {
-        this.fetchTypes = fetchTypes;
-    }
-
     public TupleDefinitionScanResult scan(
             Set<TupleDefinitionSpec> tupleDefinitionSpecs,
             Trees trees,
