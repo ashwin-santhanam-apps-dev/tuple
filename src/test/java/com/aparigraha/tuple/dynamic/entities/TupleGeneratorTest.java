@@ -19,6 +19,7 @@ class TupleGeneratorTest {
         
 
         public record StudentInfo<T0, T1, T2, T3> (T0 id, T1 name, T2 age, T3 isDayScholar) {
+            public static final StudentInfo type = null;
             @Override
             public boolean equals(Object obj) {
                 if (obj instanceof StudentInfo<?, ?, ?, ?> that) {
@@ -49,6 +50,7 @@ class TupleGeneratorTest {
 
         
         public record Tuple4<T0, T1, T2, T3> (T0 item0, T1 item1, T2 item2, T3 item3) {
+            public static final Tuple4 type = null;
             @Override
             public boolean equals(Object obj) {
                 if (obj instanceof Tuple4<?, ?, ?, ?> that) {

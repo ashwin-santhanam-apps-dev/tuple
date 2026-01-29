@@ -29,7 +29,7 @@ class StaticNamedTupleFactoryGeneratorTest {
         ));
 
         var expected = """
-        public static <T0, T1> Student<T0, T1> named(Class<Student> tClass, FieldSpec<T0> name, FieldSpec<T1> age) {
+        public static <T0, T1> Student<T0, T1> named(Student type, FieldSpec<T0> name, FieldSpec<T1> age) {
             return new Student<>(name.value(null), age.value(null));
         }
         """.trim();

@@ -2,6 +2,7 @@ package {{ packageName }};
 
 
 public record {{ className }}<{{ genericsSequence }}> ({{ fields }}) {
+    public static final {{ className }} type = null;
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof {{ className }}<{{ equalsMethod.wildcardGenericSequence }}> {{ equalsMethod.tupleEqualsParameter }}) {

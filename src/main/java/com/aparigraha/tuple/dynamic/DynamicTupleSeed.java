@@ -12,7 +12,7 @@ public class DynamicTupleSeed {
         throw new RuntimeException("Facade method: Operation not permitted");
     }
 
-    public static <T> T of(Class<T> tClass, FieldSpec<?>... fieldSpecs) {
+    public static <T> T of(T type, FieldSpec<?>... fieldSpecs) {
         throw new RuntimeException("Facade method: Operation not permitted");
     }
 

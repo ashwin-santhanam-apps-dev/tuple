@@ -16,8 +16,8 @@ public class {{ dynamicTupleClassName }} {
     public static Stream<Object> {{ dynamicTupleZipMethodName }}(Stream<?>... streams) {
         return DynamicTupleSeed.zip(streams);
     }
-    public static <T> T {{ namedTupleFactoryMethodName }}(Class<T> tClass, FieldSpec<?>... fieldSpecs) {
-        return DynamicTupleSeed.of(tClass, fieldSpecs);
+    public static <T> T {{ namedTupleFactoryMethodName }}(T type, FieldSpec<?>... fieldSpecs) {
+        return DynamicTupleSeed.of(type, fieldSpecs);
     }
 {{ staticFactoryMethods }}
 }

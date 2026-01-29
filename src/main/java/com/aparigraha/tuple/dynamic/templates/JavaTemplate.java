@@ -17,6 +17,7 @@ public class JavaTemplate {
     public static final String dynamicTupleZipMethodName = "zip";
     public static final String namedTupleFactoryMethodName = "named";
     public static final String packageName = "com.aparigraha.tuple.dynamic";
+    public static final String typeReferenceFieldName = "type";
 
     public static String namedTupleFactoryMethodParam(String type, String name) {
         return "FieldSpec<%s> %s".formatted(type, name);

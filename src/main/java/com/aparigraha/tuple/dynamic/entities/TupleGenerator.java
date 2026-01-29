@@ -36,7 +36,8 @@ public class TupleGenerator {
                         "wildcardGenericSequence", wildcardGenericSequence(size),
                         "tupleEqualsParameter", tupleEqualsParameter,
                         "tupleEqualsCondition", tupleEqualsCondition(fields)
-                )
+                ),
+                "typeReferenceFieldName", typeReferenceFieldName
         );
     }
 }

@@ -15,6 +15,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static com.aparigraha.tuple.dynamic.templates.JavaTemplate.typeReferenceFieldName;
 import static com.aparigraha.tuple.processors.SupportedTupleDefinitions.NAMED_TUPLE_FACTORY_METHOD_SPEC;
 
 
@@ -105,7 +106,7 @@ public class TupleDefinitionScanner {
             }
 
             private String className(ExpressionTree argument) {
-                return argument.toString().replaceAll("\\.class$", "");
+                return argument.toString().replaceAll("\\.%s$".formatted(typeReferenceFieldName), "");
             }
 
             private String extractType(LambdaExpressionTree argument) {

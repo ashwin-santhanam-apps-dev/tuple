@@ -20,7 +20,7 @@ class TupleSpecProcessorNamedTupleIntegrationTest {
                 "import java.util.stream.Stream;",
                 "public class Main {",
                 "   public static void main(String[] args) {",
-                "       named(Student.class, name -> \"Alice\", age -> 12);",
+                "       named(Student.type, name -> \"Alice\", age -> 12);",
                 "   }",
                 "}"
         );
@@ -38,6 +38,7 @@ class TupleSpecProcessorNamedTupleIntegrationTest {
                                 "\n" +
                                 "\n" +
                                 "public record Student<T0, T1> (T0 name, T1 age) {\n" +
+                                "    public static final Student type = null;" +
                                 "    @Override\n" +
                                 "    public boolean equals(Object obj) {\n" +
                                 "        if (obj instanceof Student<?, ?> that) {\n" +
@@ -67,10 +68,10 @@ class TupleSpecProcessorNamedTupleIntegrationTest {
                         "    public static Stream<Object> zip(Stream<?>... streams) {",
                         "        return DynamicTupleSeed.zip(streams);",
                         "    }",
-                        "    public static <T> T named(Class<T> tClass, FieldSpec<?>... fieldSpecs) {",
-                        "        return DynamicTupleSeed.of(tClass, fieldSpecs);",
+                        "    public static <T> T named(T type, FieldSpec<?>... fieldSpecs) {",
+                        "        return DynamicTupleSeed.of(type, fieldSpecs);",
                         "    }",
-                        "    public static <T0, T1> Student<T0, T1> named(Class<Student> tClass, FieldSpec<T0> name, FieldSpec<T1> age) {",
+                        "    public static <T0, T1> Student<T0, T1> named(Student type, FieldSpec<T0> name, FieldSpec<T1> age) {",
                         "        return new Student<>(name.value(null), age.value(null));",
                         "    }",
                         "    ",

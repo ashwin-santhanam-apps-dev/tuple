@@ -41,8 +41,8 @@ class DynamicTupleGeneratorTest {
             public static Stream<Object> zip(Stream<?>... streams) {
                 return DynamicTupleSeed.zip(streams);
             }
-            public static <T> T named(Class<T> tClass, FieldSpec<?>... fieldSpecs) {
-                return DynamicTupleSeed.of(tClass, fieldSpecs);
+            public static <T> T named(T type, FieldSpec<?>... fieldSpecs) {
+                return DynamicTupleSeed.of(type, fieldSpecs);
             }
         }
         """.trim();
@@ -90,8 +90,8 @@ class DynamicTupleGeneratorTest {
             public static Stream<Object> zip(Stream<?>... streams) {
                 return DynamicTupleSeed.zip(streams);
             }
-            public static <T> T named(Class<T> tClass, FieldSpec<?>... fieldSpecs) {
-                return DynamicTupleSeed.of(tClass, fieldSpecs);
+            public static <T> T named(T type, FieldSpec<?>... fieldSpecs) {
+                return DynamicTupleSeed.of(type, fieldSpecs);
             }
         public static <T0, T1> Tuple2<T0, T1> of(T0 item0, T1 item1) {
             return new Tuple2<>(item0, item1);
@@ -107,10 +107,10 @@ class DynamicTupleGeneratorTest {
             List<Stream<Object>> streams = List.of((Stream<Object>) stream0, (Stream<Object>) stream1, (Stream<Object>) stream2);
             return DynamicTupleSeed.zip(streams).map(zipped -> new Tuple3<>((T0) zipped.get(0), (T1) zipped.get(1), (T2) zipped.get(2)));
         }
-        public static <T0, T1> Student<T0, T1> named(Class<Student> tClass, FieldSpec<T0> name, FieldSpec<T1> age) {
+        public static <T0, T1> Student<T0, T1> named(Student type, FieldSpec<T0> name, FieldSpec<T1> age) {
             return new Student<>(name.value(null), age.value(null));
         }
-        public static <T0, T1> Staff<T0, T1> named(Class<Staff> tClass, FieldSpec<T0> name, FieldSpec<T1> age) {
+        public static <T0, T1> Staff<T0, T1> named(Staff type, FieldSpec<T0> name, FieldSpec<T1> age) {
             return new Staff<>(name.value(null), age.value(null));
         }}
         """.trim();
