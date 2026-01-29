@@ -72,7 +72,7 @@ Boolean isHosteler = studentInfo.item1();
 1. A static method `DynamicTuple.named` is given by the library initially.
 ```java
 public class DynamicTuple {
-    public static T named(Class<T> tClass, FieldSpec<?>... fieldSpecs) {}
+    public static T named(T type, FieldSpec<?>... fieldSpecs) {}
 }
 ```
 2. Give a unique class name considering the current package as the first parameter.
@@ -83,10 +83,14 @@ public interface FieldSpec<T> {
     T value(Object fieldName);
 }
 ```
+4. The `T type` param is just used to for overloading factory methods. A static field `type` is created for each named tuple class with null value. But the type is same as the tuple class. This is used to uniquely select an overloaded method. 
+```java
+public static final Student type = null;
+```
 #### Example
 The below code generates a student record with two fields name and age within the same package.
 ```java
-Student student = DynamicTuple.named(Student.class, name -> "Alice", age -> 12);
+Student student = DynamicTuple.named(Student.type, name -> "Alice", age -> 12);
 ```
 The fields are immutable and can be accessed via,
 ```java
