@@ -18,15 +18,13 @@ class StaticNamedTupleFactoryGeneratorTest {
                 new PebbleTemplateProcessor("templates")
         );
 
-        var content = generator.generate(new NamedTupleDefinition(
-                "",
+        var content = generator.generate(
                 "Student",
-                "",
                 Set.of(
                         new NamedTupleField(0, "name", null),
                         new NamedTupleField(1, "age", null)
                 )
-        ));
+        );
 
         var expected = """
         public static <T0, T1> Student<T0, T1> named(Student type, FieldSpec<T0> name, FieldSpec<T1> age) {

@@ -35,7 +35,8 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
     private static final Set<TupleDefinitionSpec> tupleDefinitionSpecs = Set.of(
             TUPLE_FACTORY_METHOD_SPEC,
             TUPLE_ZIP_METHOD_SPEC,
-            NAMED_TUPLE_FACTORY_METHOD_SPEC
+            NAMED_TUPLE_FACTORY_METHOD_SPEC,
+            NAMED_TUPLE_ZIP_METHOD_SPEC
     );
     private static final Set<ElementKind> supportedRootElements = Set.of(CLASS, INTERFACE, RECORD);
 
@@ -108,6 +109,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                         tupleDefinitionSpecs,
                         trees,
                         processingEnv.getElementUtils(),
+                        processingEnv.getTypeUtils(),
                         element,
                         false
                 ))
@@ -139,6 +141,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                                         .toList()
                         )
                 )
+                .distinct()
                 .map(this::generateTupleClass)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
@@ -151,6 +154,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                 dynamicTupleClassName,
                 dynamicTupleFactoryMethodName,
                 dynamicTupleZipMethodName,
+                dynamicNamedTupleZipMethodName,
                 namedTupleFactoryMethodName,
                 scanResult.numberedTupleDefinitions().stream()
                         .map(NumberedTupleDefinition::argumentCount)
@@ -206,6 +210,7 @@ public class TupleSpecProcessor extends OncePerLifecycleProcessor {
                             tupleDefinitionSpecs,
                             trees,
                             processingEnv.getElementUtils(),
+                            processingEnv.getTypeUtils(),
                             e.getTypeElement(),
                             true
                     ));

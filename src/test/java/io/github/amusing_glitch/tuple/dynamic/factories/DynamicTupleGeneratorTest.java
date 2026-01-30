@@ -20,6 +20,7 @@ class DynamicTupleGeneratorTest {
                 pebbleTemplateProcessor,
                 new StaticTupleFactoryGenerator(pebbleTemplateProcessor),
                 new ZipperMethodGenerator(pebbleTemplateProcessor),
+                new NamedZipperMethodGenerator(pebbleTemplateProcessor),
                 new StaticNamedTupleFactoryGenerator(pebbleTemplateProcessor)
         );
 
@@ -30,6 +31,7 @@ class DynamicTupleGeneratorTest {
         import java.util.stream.Stream;
         
         import io.github.amusing_glitch.tuple.dynamic.factories.FieldSpec;
+        import io.github.amusing_glitch.tuple.dynamic.factories.StreamFieldSpec;
         
 
 
@@ -44,6 +46,9 @@ class DynamicTupleGeneratorTest {
             public static <T> T named(T type, FieldSpec<?>... fieldSpecs) {
                 return DynamicTupleSeed.of(type, fieldSpecs);
             }
+            public static <T> Stream<T> namedZip(T type, StreamFieldSpec<?>... streamFieldSpecs) {
+                return DynamicTupleSeed.namedZip(type, streamFieldSpecs);
+            }
         }
         """.trim();
         var schema = generator.generate(new DynamicTupleGenerationParam(
@@ -51,6 +56,7 @@ class DynamicTupleGeneratorTest {
                 "DynamicTuple",
                 "of",
                 "zip",
+                "namedZip",
                 "named",
                 Set.of(),
                 Set.of()
@@ -68,9 +74,9 @@ class DynamicTupleGeneratorTest {
                 pebbleTemplateProcessor,
                 new StaticTupleFactoryGenerator(pebbleTemplateProcessor),
                 new ZipperMethodGenerator(pebbleTemplateProcessor),
+                new NamedZipperMethodGenerator(pebbleTemplateProcessor),
                 new StaticNamedTupleFactoryGenerator(pebbleTemplateProcessor)
         );
-
         var expected = """
         package io.github.amusing_glitch.tuple.dynamic;
         
@@ -78,11 +84,12 @@ class DynamicTupleGeneratorTest {
         import java.util.stream.Stream;
         
         import io.github.amusing_glitch.tuple.dynamic.factories.FieldSpec;
+        import io.github.amusing_glitch.tuple.dynamic.factories.StreamFieldSpec;
         
         import com.example.Student;
         import com.example1.Staff;
-
-
+        
+        
         public class DynamicTuple {
             public static Object of(Object... args) {
                 return DynamicTupleSeed.of(args);
@@ -90,8 +97,11 @@ class DynamicTupleGeneratorTest {
             public static Stream<Object> zip(Stream<?>... streams) {
                 return DynamicTupleSeed.zip(streams);
             }
-            public static <T> T named(T type, FieldSpec<?>... fieldSpecs) {
+            public static <T> T namedZip(T type, FieldSpec<?>... fieldSpecs) {
                 return DynamicTupleSeed.of(type, fieldSpecs);
+            }
+            public static <T> Stream<T> named(T type, StreamFieldSpec<?>... streamFieldSpecs) {
+                return DynamicTupleSeed.namedZip(type, streamFieldSpecs);
             }
         public static <T0, T1> Tuple2<T0, T1> of(T0 item0, T1 item1) {
             return new Tuple2<>(item0, item1);
@@ -110,10 +120,21 @@ class DynamicTupleGeneratorTest {
         public static <T0, T1> Student<T0, T1> named(Student type, FieldSpec<T0> name, FieldSpec<T1> age) {
             return new Student<>(name.value(null), age.value(null));
         }
+        public static <T0, T1> Stream<Student<T0, T1>> namedZip(Student type, StreamFieldSpec<T0> stream0, StreamFieldSpec<T1> stream1) {
+            return DynamicTupleSeed.zip(List.of(
+                (Stream<Object>) stream0.value(null), (Stream<Object>) stream1.value(null)
+            )).map(zipped -> new Student<>((T0) zipped.get(0), (T1) zipped.get(1)));
+        }
         public static <T0, T1> Staff<T0, T1> named(Staff type, FieldSpec<T0> name, FieldSpec<T1> age) {
             return new Staff<>(name.value(null), age.value(null));
+        }
+        public static <T0, T1> Stream<Staff<T0, T1>> namedZip(Staff type, StreamFieldSpec<T0> stream0, StreamFieldSpec<T1> stream1) {
+            return DynamicTupleSeed.zip(List.of(
+                (Stream<Object>) stream0.value(null), (Stream<Object>) stream1.value(null)
+            )).map(zipped -> new Staff<>((T0) zipped.get(0), (T1) zipped.get(1)));
         }}
         """.trim();
+
         var tupleSizes = new LinkedHashSet<Integer>();
         tupleSizes.add(2);
         tupleSizes.add(3);
@@ -144,6 +165,7 @@ class DynamicTupleGeneratorTest {
                 "of",
                 "zip",
                 "named",
+                "namedZip",
                 tupleSizes,
                 namedTupleDefinitions
         ));

@@ -9,13 +9,19 @@ import com.sun.source.util.TreePathScanner;
 import com.sun.source.util.Trees;
 
 import javax.lang.model.element.Element;
+import javax.lang.model.type.DeclaredType;
+import javax.lang.model.type.PrimitiveType;
+import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
+import javax.lang.model.util.Types;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static io.github.amusing_glitch.tuple.dynamic.templates.JavaTemplate.typeReferenceFieldName;
 import static io.github.amusing_glitch.tuple.processors.SupportedTupleDefinitions.NAMED_TUPLE_FACTORY_METHOD_SPEC;
+import static io.github.amusing_glitch.tuple.processors.SupportedTupleDefinitions.NAMED_TUPLE_ZIP_METHOD_SPEC;
 
 
 public class TupleDefinitionScanner {
@@ -29,6 +35,7 @@ public class TupleDefinitionScanner {
             Set<TupleDefinitionSpec> tupleDefinitionSpecs,
             Trees trees,
             Elements elementUtils,
+            Types typeUtils,
             Element rootElement,
             boolean extractType
     ) {
@@ -46,7 +53,7 @@ public class TupleDefinitionScanner {
                         .filter(expectedSpec -> isTargetMethod(expectedSpec, node))
                         .findFirst()
                         .ifPresent(tupleDefinitionSpec -> {
-                                if (tupleDefinitionSpec == NAMED_TUPLE_FACTORY_METHOD_SPEC) {
+                                if (tupleDefinitionSpec == NAMED_TUPLE_FACTORY_METHOD_SPEC || tupleDefinitionSpec == NAMED_TUPLE_ZIP_METHOD_SPEC) {
                                     result.add(processArguments(node, tupleDefinitionSpec));
                                 } else {
                                     result.add(new NumberedTupleDefinition(
@@ -108,10 +115,25 @@ public class TupleDefinitionScanner {
                 return argument.toString().replaceAll("\\.%s$".formatted(typeReferenceFieldName), "");
             }
 
-            private String extractType(LambdaExpressionTree argument) {
+            private String extractType(LambdaExpressionTree argument, boolean zipMethod) {
                 var treePath = trees.getPath(getCurrentPath().getCompilationUnit(), argument.getBody());
                 trees.getElement(treePath);
-                return trees.getTypeMirror(treePath).toString();
+                var type = trees.getTypeMirror(treePath);
+                if (type instanceof DeclaredType declaredType) {
+                    if (zipMethod) {
+                        var streamElement = elementUtils.getTypeElement(Stream.class.getCanonicalName());
+                        var streamType = typeUtils.erasure(streamElement.asType());
+                        var targetType = typeUtils.erasure(declaredType);
+                        assert typeUtils.isSameType(streamType, targetType);
+                        return declaredType.getTypeArguments().getFirst().toString();
+                    } else {
+                        return type.toString();
+                    }
+                } else if (type instanceof PrimitiveType primitiveType) {
+                    return typeUtils.boxedClass(primitiveType).asType().toString();
+                } else {
+                    return type.toString();
+                }
             }
 
             private NamedTupleDefinition processArguments(MethodInvocationTree node, TupleDefinitionSpec spec) {
@@ -131,7 +153,7 @@ public class TupleDefinitionScanner {
                                 new NamedTupleField(
                                         indexedArgument.index(),
                                         fieldName(indexedArgument.value()),
-                                        extractType ? extractType(indexedArgument.value()) : null
+                                        extractType ? extractType(indexedArgument.value(), Objects.equals(spec, NAMED_TUPLE_ZIP_METHOD_SPEC)) : null
                                 )
                         )
                         .collect(Collectors.toSet());

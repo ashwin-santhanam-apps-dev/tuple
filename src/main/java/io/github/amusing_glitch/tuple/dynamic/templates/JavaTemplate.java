@@ -15,6 +15,7 @@ public class JavaTemplate {
     public static final String dynamicTupleClassName = "DynamicTuple";
     public static final String dynamicTupleFactoryMethodName = "of";
     public static final String dynamicTupleZipMethodName = "zip";
+    public static final String dynamicNamedTupleZipMethodName = "namedZip";
     public static final String namedTupleFactoryMethodName = "named";
     public static final String packageName = "io.github.amusing_glitch.tuple.dynamic";
     public static final String typeReferenceFieldName = "type";
@@ -70,8 +71,16 @@ public class JavaTemplate {
         return csvOf(range(size).map(index -> "Stream<T%d> stream%d".formatted(index, index)));
     }
 
+    public static String zipFieldParameters(int size) {
+        return csvOf(range(size).map(index -> "StreamFieldSpec<T%d> stream%d".formatted(index, index)));
+    }
+
     public static String objectStreamSequence(int size) {
         return csvOf(range(size).map("(Stream<Object>) stream%d"::formatted));
+    }
+
+    public static String objectStreamFieldSequence(int size) {
+        return csvOf(range(size).map("(Stream<Object>) stream%d.value(null)"::formatted));
     }
 
     public static String listToTupleSequence(int size) {

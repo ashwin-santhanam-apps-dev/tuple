@@ -23,4 +23,10 @@ public class SupportedTupleDefinitions {
             dynamicTupleClassName,
             namedTupleFactoryMethodName
     );
+
+    public static final TupleDefinitionSpec NAMED_TUPLE_ZIP_METHOD_SPEC = new TupleDefinitionSpec(
+            packageName,
+            dynamicTupleClassName,
+            dynamicNamedTupleZipMethodName
+    );
 }

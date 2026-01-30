@@ -6,7 +6,7 @@
 
     <groupId>io.github.amusing-glitch</groupId>
     <artifactId>tuple</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
 
     <name>Tuple</name>
     <description>Creates "Strongly Typed" Tuples with variable lengths in the compile time.</description>

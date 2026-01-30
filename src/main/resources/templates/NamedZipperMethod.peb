@@ -1,0 +1,6 @@
+public static <{{ genericsSequence }}> Stream<{{ className }}<{{ genericsSequence }}>> {{ dynamicTupleZipMethodName }}({{ className }} type, {{ zipFieldParameters }}) {
+    return DynamicTupleSeed.zip(List.of(
+        {{ objectStreamFieldSequence }}
+
+    )).map({{ listToTupleParameter }} -> new {{ className }}<>({{ listToTupleSequence }}));
+}

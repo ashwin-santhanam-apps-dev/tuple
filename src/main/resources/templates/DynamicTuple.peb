@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import io.github.amusing_glitch.tuple.dynamic.factories.FieldSpec;
+import io.github.amusing_glitch.tuple.dynamic.factories.StreamFieldSpec;
 
 {{ imports }}
 
@@ -18,6 +19,9 @@ public class {{ dynamicTupleClassName }} {
     }
     public static <T> T {{ namedTupleFactoryMethodName }}(T type, FieldSpec<?>... fieldSpecs) {
         return DynamicTupleSeed.of(type, fieldSpecs);
+    }
+    public static <T> Stream<T> {{ dynamicNamedTupleZipMethodName }}(T type, StreamFieldSpec<?>... streamFieldSpecs) {
+        return DynamicTupleSeed.namedZip(type, streamFieldSpecs);
     }
 {{ staticFactoryMethods }}
 }

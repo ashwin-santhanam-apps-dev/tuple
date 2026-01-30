@@ -2,10 +2,7 @@ package io.github.amusing_glitch.tuple.processors;
 
 import io.github.amusing_glitch.tuple.dynamic.JavaFileWriter;
 import io.github.amusing_glitch.tuple.dynamic.entities.TupleGenerator;
-import io.github.amusing_glitch.tuple.dynamic.factories.DynamicTupleGenerator;
-import io.github.amusing_glitch.tuple.dynamic.factories.StaticNamedTupleFactoryGenerator;
-import io.github.amusing_glitch.tuple.dynamic.factories.StaticTupleFactoryGenerator;
-import io.github.amusing_glitch.tuple.dynamic.factories.ZipperMethodGenerator;
+import io.github.amusing_glitch.tuple.dynamic.factories.*;
 import io.github.amusing_glitch.tuple.dynamic.templates.PebbleTemplateProcessor;
 import io.github.amusing_glitch.tuple.javac.TupleDefinitionScanner;
 import io.github.amusing_glitch.tuple.validators.NamedTupleArgumentOrderValidator;
@@ -20,6 +17,7 @@ class TupleSpecProcessorBootstrap {
             PEBBLE_TEMPLATE_PROCESSOR,
             new StaticTupleFactoryGenerator(PEBBLE_TEMPLATE_PROCESSOR),
             new ZipperMethodGenerator(PEBBLE_TEMPLATE_PROCESSOR),
+            new NamedZipperMethodGenerator(PEBBLE_TEMPLATE_PROCESSOR),
             new StaticNamedTupleFactoryGenerator(PEBBLE_TEMPLATE_PROCESSOR)
     );
     public static final TupleDefinitionScanner TUPLE_DEFINITION_SCANNER = new TupleDefinitionScanner(false);

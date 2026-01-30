@@ -10,6 +10,7 @@ public record DynamicTupleGenerationParam(
         String dynamicTupleClassName,
         String dynamicTupleFactoryMethodName,
         String dynamicTupleZipMethodName,
+        String dynamicNamedTupleZipMethodName,
         String namedTupleFactoryMethodName,
         Set<Integer> tupleSizes,
         Set<NamedTupleDefinition> namedTupleDefinitions

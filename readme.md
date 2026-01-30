@@ -103,6 +103,7 @@ int age = student.age();
 2. These lambdas are just for specifying the field name. Both **field order and type** has to be preserved if this same Student class is referenced as the first param of the named tuple, within the same package. Else compilation would fail.
 
 ## Stream support - Zip Streams
+### Numbered Tuples
 1. A static method `Stream<Object> DynamicTuple.zip(Stream<Object>... streams)` is given by the library initially.
 ```java
 public class DynamicTuple {
@@ -113,7 +114,7 @@ public class DynamicTuple {
 3. Similar to `DynamicTuple.of`, calling `DynamicTuple.zip` will also, 
    1. Create tuple classes based on the number of arguments.
    2. Create a new static zip overloaded method with the given arguments.
-### Example
+#### Example
 This is example of calling `DynamicTuple.zip` with `Stream<String>`, `Stream<Integer>`, `Stream<Boolean>`
 1. This zips the three individual streams into a single stream. The length of the stream will be the length of the smallest stream.
 ```java
@@ -128,4 +129,19 @@ var studentInfoStream = DynamicTuple.zip(nameStream, ageStream, isHostelerStream
 ```java
 public static <T0, T1, T2> Stream<Tuple3<T0, T1, T2>> zip(Stream<T0> stream0, Stream<T1> stream1, Stream<T2> stream2) {}
 ```
-4. The `zip` method does not collect values internally. It's a intermediate operation. 
+4. The `zip` method does not collect values internally. It's an intermediate operation.
+### Named Tuples
+1. A static method `DynamicTuple.namedZip` is given by the library initially.
+```java
+public class DynamicTuple {
+    public static Stream<T> namedZip(T type, StreamFieldSpec<?>... streamFieldSpecs) {}
+}
+```
+The `StreamFieldSpec<T>` is a similar functional interface like `FieldSpec<T>`, but returns `Stream<T>`.
+2. This must be used in the way similar to the earlier zip method, but with the class and field name information.
+#### Example
+```java
+List<Item> items;
+Stream<IndexedItem<String, Integer>> indexedItems = DynamicTuple.namedZip(IndexedItem.type, item -> items.stream(), index -> IntStream.range(0, items.size()));
+```
+This will create a class with name `IndexedItem` passed as the first parameter, with the fields `item` and `index`.

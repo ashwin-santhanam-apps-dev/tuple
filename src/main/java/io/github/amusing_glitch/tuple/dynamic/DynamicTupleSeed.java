@@ -1,6 +1,7 @@
 package io.github.amusing_glitch.tuple.dynamic;
 
 import io.github.amusing_glitch.tuple.dynamic.factories.FieldSpec;
+import io.github.amusing_glitch.tuple.dynamic.factories.StreamFieldSpec;
 import io.github.amusing_glitch.tuple.extensions.stream.Zipper;
 
 import java.util.List;
@@ -17,6 +18,10 @@ public class DynamicTupleSeed {
     }
 
     public static Stream<Object> zip(Stream<?>... streams) {
+        throw new RuntimeException("Facade method: Operation not permitted");
+    }
+
+    public static <T> Stream<T> namedZip(T type, StreamFieldSpec<?>... streamFieldSpecs) {
         throw new RuntimeException("Facade method: Operation not permitted");
     }
 

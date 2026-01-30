@@ -16,11 +16,12 @@ class TupleSpecProcessorNamedTupleIntegrationTest {
         JavaFileObject dependant = JavaFileObjects.forSourceLines(
                 "com.example.Main",
                 "package com.example;",
-                "import static io.github.amusing_glitch.tuple.dynamic.DynamicTuple.named;",
+                "import static io.github.amusing_glitch.tuple.dynamic.DynamicTuple.*;",
                 "import java.util.stream.Stream;",
                 "public class Main {",
                 "   public static void main(String[] args) {",
                 "       named(Student.type, name -> \"Alice\", age -> 12);",
+                "       namedZip(Student.type, name -> Stream.of(\"A\"), age -> Stream.of(12));",
                 "   }",
                 "}"
         );
@@ -58,6 +59,7 @@ class TupleSpecProcessorNamedTupleIntegrationTest {
                         "import java.util.stream.Stream;",
                         "",
                         "import io.github.amusing_glitch.tuple.dynamic.factories.FieldSpec;",
+                        "import io.github.amusing_glitch.tuple.dynamic.factories.StreamFieldSpec;",
                         "",
                         "import com.example.Student;",
                         "",
@@ -71,10 +73,18 @@ class TupleSpecProcessorNamedTupleIntegrationTest {
                         "    public static <T> T named(T type, FieldSpec<?>... fieldSpecs) {",
                         "        return DynamicTupleSeed.of(type, fieldSpecs);",
                         "    }",
+                        "    public static <T> Stream<T> namedZip(T type, StreamFieldSpec<?>... streamFieldSpecs) {",
+                        "       return DynamicTupleSeed.namedZip(type, streamFieldSpecs);",
+                        "    }",
                         "    public static <T0, T1> Student<T0, T1> named(Student type, FieldSpec<T0> name, FieldSpec<T1> age) {",
                         "        return new Student<>(name.value(null), age.value(null));",
                         "    }",
                         "    ",
+                        "    public static <T0, T1> Stream<Student<T0, T1>> namedZip(Student type, StreamFieldSpec<T0> stream0, StreamFieldSpec<T1> stream1) {",
+                        "            return DynamicTupleSeed.zip(List.of(",
+                        "                   (Stream<Object>) stream0.value(null), (Stream<Object>) stream1.value(null)",
+                        "            )).map(zipped -> new Student<>((T0) zipped.get(0), (T1) zipped.get(1)));",
+                        "    }",
                         "}"
                 ));
     }
