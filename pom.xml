@@ -8,6 +8,29 @@
     <artifactId>tuple</artifactId>
     <version>1.0.0</version>
 
+    <name>Tuple</name>
+    <description>Creates "Strongly Typed" Tuples with variable lengths in the compile time.</description>
+    <url>https://github.com/amusing-glitch/tuple</url>
+
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>https://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <scm>
+        <url>https://github.com/amusing-glitch/tuple</url>
+    </scm>
+
+    <developers>
+        <developer>
+            <id>amusing-glitch</id>
+            <name>Ashwin Santhanam</name>
+            <email>ashwinsanthanam.apps.dev@gmail.com</email>
+        </developer>
+    </developers>
+
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
@@ -50,6 +73,49 @@
                 <version>3.13.0</version>
                 <configuration>
                     <proc>none</proc>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>3.3.1</version>
+                <executions>
+                    <execution>
+                        <id>attach-sources</id>
+                        <goals><goal>jar-no-fork</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-javadoc-plugin</artifactId>
+                <version>3.8.0</version>
+                <executions>
+                    <execution>
+                        <id>attach-javadocs</id>
+                        <goals><goal>jar</goal></goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>3.2.5</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <keyname>C69373F96A3E1185</keyname>
+                    <useAgent>true</useAgent>
                 </configuration>
             </plugin>
 
